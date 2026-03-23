@@ -4,54 +4,79 @@
     <meta charset="UTF-8">
     <title>우리 팀 탐험 지도</title>
     <style>
-        body { background-color: #f4e4bc; font-family: 'serif'; display: flex; flex-direction: column; align-items: center; }
-        h1 { color: #5d4037; margin-top: 30px; }
-        .map-wrapper { position: relative; border: 10px solid #8b4513; border-radius: 10px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); }
+        body { background-color: #f4e4bc; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
+        h1 { color: #5d4037; text-shadow: 1px 1px 2px white; }
         
-        /* 캐릭터 위치 (예시 - 이 숫자를 바꿔서 얼굴 위치를 조정하세요) */
-        .person { position: absolute; width: 60px; height: 60px; cursor: pointer; border-radius: 50%; border: 2px solid gold; transition: transform 0.2s; background: rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-weight: bold;}
-        .person:hover { transform: scale(1.2); }
+        /* 지도 컨테이너 */
+        .map-wrapper { position: relative; border: 12px solid #8b4513; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #eee; display: inline-block; }
+        .map-wrapper img { display: block; max-width: 100%; height: auto; }
+        
+        /* 팀원 클릭 버튼 (얼굴 위치) */
+        .person { 
+            position: absolute; width: 50px; height: 50px; 
+            cursor: pointer; border-radius: 50%; border: 3px solid gold; 
+            background: rgba(255,255,255,0.8); display: flex; align-items: center; 
+            justify-content: center; font-weight: bold; font-size: 18px; color: #8b4513;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3); transition: transform 0.3s;
+        }
+        .person:hover { transform: scale(1.3) rotate(10deg); background: gold; color: white; }
 
-        /* 5명의 위치 예시 (지도의 가로/세로 % 비율) */
+        /* 각 팀원 위치 (지도 이미지 위에서 %로 조절하세요) */
         #p1 { top: 20%; left: 30%; }
         #p2 { top: 40%; left: 15%; }
         #p3 { top: 60%; left: 50%; }
-        #p4 { top: 30%; left: 70%; }
-        #p5 { top: 70%; left: 80%; }
+        #p4 { top: 35%; left: 75%; }
+        #p5 { top: 75%; left: 80%; }
 
-        /* 팝업창 디자인 */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; padding: 20px; background: white; border: 3px solid #8b4513; box-shadow: 0 0 20px rgba(0,0,0,0.5); text-align: center; z-index: 100; border-radius: 15px; }
-        .modal h2 { margin-top: 0; color: #8b4513; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99; }
-        button { background: #8b4513; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+        /* 팝업 모달 디자인 */
+        .modal { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            width: 300px; padding: 25px; background: #fffcf5; border: 5px solid #8b4513; 
+            border-radius: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.7); z-index: 100; text-align: center;
+        }
+        .modal h2 { margin: 0 0 10px 0; color: #8b4513; border-bottom: 2px dashed #8b4513; padding-bottom: 10px; }
+        .modal p { margin: 8px 0; font-size: 15px; color: #444; line-height: 1.6; }
+        .modal .label { font-weight: bold; color: #a0522d; }
+        .modal a { color: #0066cc; text-decoration: none; word-break: break-all; }
+        
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
+        .close-btn { margin-top: 15px; background: #8b4513; color: white; border: none; padding: 8px 20px; cursor: pointer; border-radius: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>🗺️ 우리 팀 보물 지도</h1>
-    <p>얼굴(동그라미)을 클릭해 팀원을 확인하세요!</p>
+    <h1>🗺️ 우리 팀 탐험 지도</h1>
+    <p>지도 위 숫자를 클릭해 팀원 정보를 확인하세요!</p>
 
     <div class="map-wrapper">
-        <img id="mapImg" src="https://via.placeholder.com/800x500/e0c090/5d4037?text=Adventure+Map" alt="Explore Map">
+        <img src="IMG_3323.jpeg" alt="팀 지도">
         
-        <div id="p1" class="person" onclick="showInfo('탐험대장 홍길동', '지도 읽기 달인입니다.')">1</div>
-        <div id="p2" class="person" onclick="showInfo('부대장 김철수', '장작 패기 전문가!')">2</div>
-        <div id="p3" class="person" onclick="showInfo('요리사 이영희', '맛있는 밥을 책임져요.')">3</div>
-        <div id="p4" class="person" onclick="showInfo('기록관 박민수', '모든 것을 기록합니다.')">4</div>
-        <div id="p5" class="person" onclick="showInfo('정찰병 최지우', '발이 아주 빨라요.')">5</div>
+        <div id="p1" class="person" onclick="showInfo('이름1', '학과1', 'MBTI', '소개글1', 'email1@test.com')">1</div>
+        <div id="p2" class="person" onclick="showInfo('이름2', '학과2', 'MBTI', '소개글2', 'email2@test.com')">2</div>
+        <div id="p3" class="person" onclick="showInfo('이름3', '학과3', 'MBTI', '소개글3', 'email3@test.com')">3</div>
+        <div id="p4" class="person" onclick="showInfo('이름4', '학과4', 'MBTI', '소개글4', 'email4@test.com')">4</div>
+        <div id="p5" class="person" onclick="showInfo('이름5', '학과5', 'MBTI', '소개글5', 'email5@test.com')">5</div>
     </div>
 
     <div id="overlay" class="overlay" onclick="closeInfo()"></div>
     <div id="modal" class="modal">
         <h2 id="mName">이름</h2>
-        <p id="mInfo">상세 정보</p>
-        <button onclick="closeInfo()">닫기</button>
+        <p><span class="label">학과:</span> <span id="mDept">학과명</span></p>
+        <p><span class="label">MBTI:</span> <span id="mMbti">MBTI</span></p>
+        <p><span class="label">소개:</span> <br><span id="mIntro">소개말</span></p>
+        <p><span class="label">메일:</span> <br><a id="mEmail" href="">이메일주소</a></p>
+        <button class="close-btn" onclick="closeInfo()">탐험 계속하기</button>
     </div>
 
     <script>
-        function showInfo(name, info) {
+        function showInfo(name, dept, mbti, intro, email) {
             document.getElementById('mName').innerText = name;
-            document.getElementById('mInfo').innerText = info;
+            document.getElementById('mDept').innerText = dept;
+            document.getElementById('mMbti').innerText = mbti;
+            document.getElementById('mIntro').innerText = intro;
+            document.getElementById('mEmail').innerText = email;
+            document.getElementById('mEmail').href = "mailto:" + email;
+            
             document.getElementById('modal').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
