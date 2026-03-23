@@ -11,22 +11,24 @@
         .map-wrapper { position: relative; border: 12px solid #8b4513; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #eee; display: inline-block; }
         .map-wrapper img { display: block; max-width: 100%; height: auto; }
         
-        /* 팀원 클릭 버튼 (얼굴 위치) */
+        /* 팀원 클릭 버튼 (얼굴 사진 동그라미) */
         .person { 
-            position: absolute; width: 50px; height: 50px; 
+            position: absolute; width: 65px; height: 65px; 
             cursor: pointer; border-radius: 50%; border: 3px solid gold; 
-            background: rgba(255,255,255,0.8); display: flex; align-items: center; 
-            justify-content: center; font-weight: bold; font-size: 18px; color: #8b4513;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3); transition: transform 0.3s;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5); transition: transform 0.3s;
+            background-size: cover; 
+            background-position: center;
+            background-color: white;
+            color: transparent; /* 숫자 안 보이게 처리 */
         }
-        .person:hover { transform: scale(1.3) rotate(10deg); background: gold; color: white; }
+        .person:hover { transform: scale(1.3) rotate(10deg); z-index: 10; border-color: #ff4500; }
 
-        /* 각 팀원 위치 (지도 이미지 위에서 %로 조절하세요) */
-        #p1 { top: 20%; left: 30%; }
-        #p2 { top: 40%; left: 15%; }
-        #p3 { top: 60%; left: 50%; }
-        #p4 { top: 35%; left: 75%; }
-        #p5 { top: 75%; left: 80%; }
+        /* 각 팀원 위치 (지도 위 % 위치 - 자유롭게 조절하세요) */
+        #p1 { top: 32%; left: 35%; }
+        #p2 { top: 52%; left: 23%; }
+        #p3 { top: 71%; left: 52%; }
+        #p4 { top: 48%; left: 70%; }
+        #p5 { top: 83%; left: 75%; }
 
         /* 팝업 모달 디자인 */
         .modal { 
@@ -37,7 +39,7 @@
         .modal h2 { margin: 0 0 10px 0; color: #8b4513; border-bottom: 2px dashed #8b4513; padding-bottom: 10px; }
         .modal p { margin: 8px 0; font-size: 15px; color: #444; line-height: 1.6; }
         .modal .label { font-weight: bold; color: #a0522d; }
-        .modal a { color: #0066cc; text-decoration: none; word-break: break-all; }
+        .modal a { color: #0066cc; text-decoration: none; word-break: break-all; font-size: 14px; }
         
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
         .close-btn { margin-top: 15px; background: #8b4513; color: white; border: none; padding: 8px 20px; cursor: pointer; border-radius: 20px; font-weight: bold; }
@@ -46,16 +48,16 @@
 <body>
 
     <h1>🗺️ 우리 팀 탐험 지도</h1>
-    <p>지도 위 숫자를 클릭해 팀원 정보를 확인하세요!</p>
+    <p>지도 위 사진을 클릭해 팀원 정보를 확인하세요!</p>
 
     <div class="map-wrapper">
         <img src="IMG_3323.jpeg" alt="팀 지도">
         
-        <div id="p1" class="person" onclick="showInfo('이지민', '바이오메디컬공학부', 'ESFJ', '끊임없이 도전하며 성장하는 실행가', 'jimin0801@hufs.ac.kr')">1</div>
-        <div id="p2" class="person" onclick="showInfo('조연선', '바이오메디컬공학부', 'MBTI', '누워있는게 제일 행복한 사람', 'cje7994@hufs.ac.kr')">2</div>
-        <div id="p3" class="person" onclick="showInfo('최현민', '바이오메디컬공학부', 'MBTI', '내적 신념이 깊은 열정적인 중재자', 'choihyunmin1003@hufs.ac.kr')">3</div>
-        <div id="p4" class="person" onclick="showInfo('김서영', '바이오메디컬공학부', 'MBTI', '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', '202602719@hufs.ac.kr')">4</div>
-        <div id="p5" class="person" onclick="showInfo('임정규', '바이오메디컬공학부', 'MBTI', '일을 열심히 꾸준히 노력하는 대기만성형', 'junggyu3798@hufs.ac.kr')">5</div>
+        <div id="p1" class="person" style="background-image: url('지민사진.jpg');" onclick="showInfo('이지민', '바이오메디컬공학부', 'ESFJ', '끊임없이 도전하며 성장하는 실행가', 'jimin0801@hufs.ac.kr')"></div>
+        <div id="p2" class="person" style="background-image: url('연선사진.jpg');" onclick="showInfo('조연선', '바이오메디컬공학부', 'ISTP', '누워있는게 제일 행복한 사람', 'cje7994@hufs.ac.kr')"></div>
+        <div id="p3" class="person" style="background-image: url('현민사진.jpg');" onclick="showInfo('최현민', '바이오메디컬공학부', 'INFP', '내적 신념이 깊은 열정적인 중재자', 'choihyunmin1003@hufs.ac.kr')"></div>
+        <div id="p4" class="person" style="background-image: url('서영사진.jpg');" onclick="showInfo('김서영', '바이오메디컬공학부', 'INFJ', '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', '202602719@hufs.ac.kr')"></div>
+        <div id="p5" class="person" style="background-image: url('정규사진.jpg');" onclick="showInfo('임정규', '바이오메디컬공학부', 'ISFJ', '일을 열심히 꾸준히 노력하는 대기만성형', 'junggyu3798@hufs.ac.kr')"></div>
     </div>
 
     <div id="overlay" class="overlay" onclick="closeInfo()"></div>
