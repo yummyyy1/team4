@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>우리 팀 탐험 지도</title>
+    <style>
+        body { background-color: #f4e4bc; font-family: 'serif'; display: flex; flex-direction: column; align-items: center; }
+        h1 { color: #5d4037; margin-top: 30px; }
+        .map-wrapper { position: relative; border: 10px solid #8b4513; border-radius: 10px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); }
+        
+        /* 캐릭터 위치 (예시 - 이 숫자를 바꿔서 얼굴 위치를 조정하세요) */
+        .person { position: absolute; width: 60px; height: 60px; cursor: pointer; border-radius: 50%; border: 2px solid gold; transition: transform 0.2s; background: rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-weight: bold;}
+        .person:hover { transform: scale(1.2); }
+
+        /* 5명의 위치 예시 (지도의 가로/세로 % 비율) */
+        #p1 { top: 20%; left: 30%; }
+        #p2 { top: 40%; left: 15%; }
+        #p3 { top: 60%; left: 50%; }
+        #p4 { top: 30%; left: 70%; }
+        #p5 { top: 70%; left: 80%; }
+
+        /* 팝업창 디자인 */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; padding: 20px; background: white; border: 3px solid #8b4513; box-shadow: 0 0 20px rgba(0,0,0,0.5); text-align: center; z-index: 100; border-radius: 15px; }
+        .modal h2 { margin-top: 0; color: #8b4513; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99; }
+        button { background: #8b4513; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>🗺️ 우리 팀 보물 지도</h1>
+    <p>얼굴(동그라미)을 클릭해 팀원을 확인하세요!</p>
+
+    <div class="map-wrapper">
+        <img id="mapImg" src="https://via.placeholder.com/800x500/e0c090/5d4037?text=Adventure+Map" alt="Explore Map">
+        
+        <div id="p1" class="person" onclick="showInfo('탐험대장 홍길동', '지도 읽기 달인입니다.')">1</div>
+        <div id="p2" class="person" onclick="showInfo('부대장 김철수', '장작 패기 전문가!')">2</div>
+        <div id="p3" class="person" onclick="showInfo('요리사 이영희', '맛있는 밥을 책임져요.')">3</div>
+        <div id="p4" class="person" onclick="showInfo('기록관 박민수', '모든 것을 기록합니다.')">4</div>
+        <div id="p5" class="person" onclick="showInfo('정찰병 최지우', '발이 아주 빨라요.')">5</div>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closeInfo()"></div>
+    <div id="modal" class="modal">
+        <h2 id="mName">이름</h2>
+        <p id="mInfo">상세 정보</p>
+        <button onclick="closeInfo()">닫기</button>
+    </div>
+
+    <script>
+        function showInfo(name, info) {
+            document.getElementById('mName').innerText = name;
+            document.getElementById('mInfo').innerText = info;
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        function closeInfo() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
