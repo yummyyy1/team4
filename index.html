@@ -12,18 +12,7 @@
         .map-wrapper img { display: block; max-width: 100%; height: auto; }
         
         #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        
-        /* [수정] 점선이 글씨 쓰듯 생겨나는 효과 스타일 */
-        .quest-line { 
-            stroke: #FFD700; 
-            stroke-width: 6; 
-            fill: none; 
-            stroke-linecap: round; 
-            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
-            /* 초기 상태: 점선 마디 설정 및 완전히 숨김 */
-            stroke-dasharray: 12, 12; 
-            transition: stroke-dashoffset 1.5s linear; 
-        }
+        .quest-line { stroke: #FFD700; stroke-width: 6; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); stroke-dasharray: 12, 12; transition: stroke-dashoffset 1.5s linear; }
 
         .person { 
             position: absolute; width: 65px; height: 65px; 
@@ -35,7 +24,7 @@
         }
         .person.active { filter: grayscale(0%); opacity: 1; pointer-events: auto; }
         .person.locked { pointer-events: none; }
-        .person.active:hover { transform: scale(2) rotate(5deg); z-index: 20; border-color: gold; }
+        .person.active:hover { transform: scale(1.8) rotate(5deg); z-index: 20; border-color: gold; }
 
         #p1 { top: 32%; left: 18%; }
         #p2 { top: 49%; left: 30%; }
@@ -53,28 +42,38 @@
 
         .modal-container { 
             display: none; position: fixed; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); width: 320px; height: 450px; 
+            transform: translate(-50%, -50%); width: 320px; height: 460px; 
             perspective: 1000px; z-index: 100; 
         }
-        .modal-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
+        .modal-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; }
         .modal-container.flipped .modal-inner { transform: rotateY(180deg); }
+        
         .modal-front, .modal-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 5px solid gold; box-shadow: 0 0 50px rgba(0,0,0,0.7); overflow: hidden; display: flex; flex-direction: column; background: #fffcf5; }
-        .modal-front-photo { width: 100%; height: 320px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
-        .modal-front h2 { margin: auto; color: #5d4037; font-size: 2rem; }
-        .click-hint { font-size: 0.9rem; color: #a0522d; margin-bottom: 15px; text-align: center; font-weight: bold; }
         
-        .modal-back { transform: rotateY(180deg); padding: 25px 20px; text-align: center; display: flex; flex-direction: column; }
+        /* 앞면 스타일 수정 */
+        .modal-front-photo { width: 100%; height: 280px; background-size: cover; background-position: center; border-bottom: 5px solid gold; cursor: pointer; }
+        .modal-front h2 { margin: 15px auto 5px; color: #5d4037; font-size: 1.8rem; cursor: pointer; }
+        .click-hint { font-size: 0.85rem; color: #a0522d; margin-bottom: 10px; text-align: center; font-weight: bold; cursor: pointer; }
+        
+        /* [추가] 앞면 하단 버튼 영역 */
+        .front-btn-group { display: flex; gap: 10px; justify-content: center; padding: 0 20px 15px; }
+        .btn-common { border: none; padding: 10px 0; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.2s; flex: 1; }
+        .flip-btn { background: #8b4513; color: white; }
+        .close-btn { background: #dcdcdc; color: #555; }
+        .close-btn:hover { background: #bbb; }
+
+        /* 뒷면 스타일 */
+        .modal-back { transform: rotateY(180deg); padding: 25px 20px; text-align: center; }
         .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px; }
-        
         .info-item { display: flex; align-items: flex-start; margin: 10px 0; font-size: 0.9rem; color: #5d4037; text-align: left; }
         .info-label { font-weight: bold; color: #8b4513; width: 55px; flex-shrink: 0; }
         .info-content { flex: 1; word-break: break-all; line-height: 1.3; }
-        
+        .next-btn { margin-top: auto; margin-bottom: 10px; background: #8b4513; color: white; width: 100%; }
+
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
-        .next-btn { margin-top: auto; margin-bottom: 10px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 90%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
 
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
-        #start-screen h2 { font-size: 3rem; color: gold; white-space: nowrap; margin-bottom: 20px;}
+        #start-screen h2 { font-size: 2.5rem; color: gold; white-space: nowrap; margin-bottom: 20px;}
         .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; }
     </style>
 </head>
@@ -103,12 +102,18 @@
 
     <div id="overlay" class="overlay"></div>
     <div id="modal-container" class="modal-container">
-        <div class="modal-inner" onclick="this.parentElement.classList.toggle('flipped')">
+        <div class="modal-inner" id="modalInner">
             <div class="modal-front">
-                <div id="mPhoto" class="modal-front-photo"></div>
-                <h2 id="mName">이름</h2>
-                <div class="click-hint">상세정보 보기 🔄</div>
+                <div id="mPhoto" class="modal-front-photo" onclick="toggleFlip()"></div>
+                <h2 id="mName" onclick="toggleFlip()">이름</h2>
+                <div class="click-hint" onclick="toggleFlip()">상세정보 보기 🔄</div>
+                
+                <div class="front-btn-group">
+                    <button class="btn-common close-btn" onclick="closeInfo()">그냥 닫기</button>
+                    <button class="btn-common flip-btn" onclick="toggleFlip()">정보 보기</button>
+                </div>
             </div>
+
             <div class="modal-back">
                 <h3 id="mNameBack">이름</h3>
                 <div class="info-item"><span class="info-label">학교</span><span class="info-content">한국외국어대학교</span></div>
@@ -117,7 +122,7 @@
                 <div class="info-item"><span class="info-label">소개</span><span id="mIntro" class="info-content"></span></div>
                 <div class="info-item"><span class="info-label">연락처</span><span id="mPhone" class="info-content"></span></div>
                 <div class="info-item"><span class="info-label">메일</span><span id="mEmail" class="info-content"></span></div>
-                <button class="next-btn" onclick="event.stopPropagation(); closeInfo();">탐험 계속하기</button>
+                <button class="btn-common next-btn" onclick="closeInfo()">탐험 계속하기</button>
             </div>
         </div>
     </div>
@@ -163,9 +168,15 @@
             document.getElementById('overlay').style.display = 'block';
         }
 
+        /* 카드 뒤집기 함수 */
+        function toggleFlip() {
+            document.getElementById('modal-container').classList.toggle('flipped');
+        }
+
         function closeInfo() {
             document.getElementById('modal-container').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+            
             if (currentStep < 5) {
                 const nextStep = currentStep + 1;
                 drawPath(currentStep, nextStep); 
@@ -190,7 +201,6 @@
             alert("탐험을 완료하였습니다!");
         }
 
-        /* [수정] 점선이 점차적으로 생겨나는 애니메이션 함수 */
         function drawPath(fromIdx, toIdx, instant = false) {
             if(document.getElementById('line-'+fromIdx)) return;
             const fromEl = document.getElementById('p' + fromIdx);
@@ -208,22 +218,15 @@
             newLine.setAttribute("d", d);
             newLine.setAttribute("class", "quest-line");
             newLine.setAttribute("id", "line-" + fromIdx);
-            
             svg.appendChild(newLine);
 
-            // 선의 전체 길이를 구합니다.
             const totalLen = newLine.getTotalLength();
-            
-            // 점선 마디(12px)와 공백(12px) 설정을 유지하면서, 
-            // offset을 선의 길이만큼 주어 처음엔 아무것도 안 보이게 합니다.
-            newLine.style.strokeDasharray = "12, 12"; 
             newLine.style.strokeDashoffset = totalLen;
 
             if(instant) {
                 newLine.style.transition = 'none';
                 newLine.style.strokeDashoffset = "0";
             } else {
-                // 브라우저가 위치를 계산할 시간을 준 뒤 offset을 0으로 만들어 슥~ 생겨나게 합니다.
                 requestAnimationFrame(() => {
                     newLine.style.strokeDashoffset = "0";
                 });
