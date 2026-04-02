@@ -2,62 +2,73 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title> 4조 탐험 지도</title>
+    <title>4조 탐험 지도</title>
     <style>
-        body { background-color: #f4e4bc; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
-        h1 { color: #5d4037; text-shadow: 1px 1px 2px white; }
+        body { background-color: #f4e4bc; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; overflow-x: hidden; }
+        h1 { color: #5d4037; text-shadow: 1px 1px 2px white; z-index: 1; }
         
+        /* 시작 화면 (Start Overlay) */
+        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
+        #start-screen h2 { font-size: 3rem; margin-bottom: 20px; color: gold; text-align: center; }
+        .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .start-btn:hover { transform: scale(1.1); background: #a0522d; }
+
         /* 지도 컨테이너 */
         .map-wrapper { position: relative; border: 12px solid #8b4513; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #eee; display: inline-block; }
         .map-wrapper img { display: block; max-width: 100%; height: auto; }
         
-        /* 팀원 클릭 버튼 (얼굴 사진 동그라미) */
+        /* SVG 경로 레이어 */
+        #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+        .quest-line { stroke: gold; stroke-width: 5; stroke-dasharray: 10; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 5px rgba(255,215,0,0.8)); transition: stroke-dashoffset 1s linear; }
+
+        /* 팀원 사진 버튼 */
         .person { 
             position: absolute; width: 65px; height: 65px; 
-            cursor: pointer; border-radius: 50%; border: 3px solid gold; 
-            box-shadow: 0 0 10px rgba(0,0,0,0.5); transition: transform 0.3s;
-            background-size: cover; 
-            background-position: center;
-            background-color: white;
-            color: transparent; /* 숫자 안 보이게 처리 */
+            cursor: pointer; border-radius: 50%; border: 3px solid white; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.5); transition: 0.3s;
+            background-size: cover; background-position: center;
+            z-index: 10; opacity: 0.3; pointer-events: none; /* 처음엔 반투명 & 클릭 불가 */
         }
-        .person:hover { transform: scale(1.3) rotate(10deg); z-index: 10; border-color: #ff4500; }
+        /* 활성화된 버튼 */
+        .person.active { opacity: 1; pointer-events: auto; border-color: gold; transform: scale(1.1); }
+        .person:hover { transform: scale(1.3) rotate(10deg); z-index: 15; border-color: #ff4500; }
 
-        /* 각 팀원 위치 (지도 위 % 위치 - 자유롭게 조절하세요) */
-        #p1 { top: 32%; left: 35%; }
-        #p2 { top: 52%; left: 23%; }
-        #p3 { top: 71%; left: 52%; }
-        #p4 { top: 48%; left: 70%; }
-        #p5 { top: 25%; left: 75%; }
+        /* 팀원별 초기 위치 (기존 위치 유지) */
+        #p1 { top: 32%; left: 35%; } /* 화산 */
+        #p2 { top: 52%; left: 23%; } /* 집 */
+        #p3 { top: 71%; left: 52%; } /* 밑에 성 */
+        #p4 { top: 48%; left: 70%; } /* 돌성 */
+        #p5 { top: 25%; left: 75%; } /* 위에 성 */
 
-        /* 팝업 모달 디자인 */
-        .modal { 
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 300px; padding: 25px; background: #fffcf5; border: 5px solid #8b4513; 
-            border-radius: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.7); z-index: 100; text-align: center;
-        }
+        /* 팝업 모달 디자인 (기존 유지) */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; padding: 25px; background: #fffcf5; border: 5px solid #8b4513; border-radius: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.7); z-index: 100; text-align: center; }
         .modal h2 { margin: 0 0 10px 0; color: #8b4513; border-bottom: 2px dashed #8b4513; padding-bottom: 10px; }
-        .modal p { margin: 8px 0; font-size: 15px; color: #444; line-height: 1.6; }
-        .modal .label { font-weight: bold; color: #a0522d; }
-        .modal a { color: #0066cc; text-decoration: none; word-break: break-all; font-size: 14px; }
-        
+        .label { font-weight: bold; color: #a0522d; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
         .close-btn { margin-top: 15px; background: #8b4513; color: white; border: none; padding: 8px 20px; cursor: pointer; border-radius: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>🗺️ 우리 팀 탐험 지도</h1>
-    <p>지도 위 사진을 클릭해 팀원 정보를 확인하세요!</p>
+    <div id="start-screen">
+        <h2>📜 4조 탐험 기록</h2>
+        <p style="margin-bottom:30px; font-size:1.2rem;">팀원들을 순서대로 찾아 탐험 경로를 완성하세요!</p>
+        <button class="start-btn" onclick="startAdventure()">탐험 시작하기</button>
+    </div>
 
-    <div class="map-wrapper">
+    <h1>🗺️ 우리 팀 탐험 지도</h1>
+    <p>탐험의 순서: 화산 🌋 → 집 🏠 → 숲의 성 🏰 → 돌의 성 🗿 → 하늘의 성 ☁️</p>
+
+    <div class="map-wrapper" id="map-container">
         <img src="85E5E5D9-C0CF-44FB-BA94-082BD6E083EB.png" alt="팀 지도">
         
-        <div id="p1" class="person" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');" onclick="showInfo('이지민', '바이오메디컬공학부', 'ESFJ', '끊임없이 도전하며 성장하는 실행가', 'jimin0801@hufs.ac.kr')"></div>
-        <div id="p2" class="person" style="background-image: url('IMG_3332.jpeg');" onclick="showInfo('조연선', '바이오메디컬공학부', 'ISTP', '누워있는게 제일 행복한 사람', 'cje7994@hufs.ac.kr')"></div>
-        <div id="p3" class="person" style="background-image: url('IMG_3331.jpeg');" onclick="showInfo('최현민', '바이오메디컬공학부', 'INFP', '내적 신념이 깊은 열정적인 중재자', 'choihyunmin1003@hufs.ac.kr')"></div>
-        <div id="p4" class="person" style="background-image: url('IMG_3333.jpeg');" onclick="showInfo('김서영', '바이오메디컬공학부', 'INFJ', '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', '202602719@hufs.ac.kr')"></div>
-        <div id="p5" class="person" style="background-image: url('IMG_3334.jpeg');" onclick="showInfo('임정규', '바이오메디컬공학부', 'ISFJ', '일을 열심히 꾸준히 노력하는 대기만성형', 'junggyu3798@hufs.ac.kr')"></div>
+        <svg id="path-layer"></svg>
+        
+        <div id="p1" class="person" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');" onclick="clickPerson(1, '이지민', '바이오메디컬공학부', 'ESFJ', '끊임없이 도전하며 성장하는 실행가', 'jimin0801@hufs.ac.kr')"></div>
+        <div id="p2" class="person" style="background-image: url('IMG_3332.jpeg');" onclick="clickPerson(2, '조연선', '바이오메디컬공학부', 'ISTP', '누워있는게 제일 행복한 사람', 'cje7994@hufs.ac.kr')"></div>
+        <div id="p3" class="person" style="background-image: url('IMG_3331.jpeg');" onclick="clickPerson(3, '최현민', '바이오메디컬공학부', 'INFP', '내적 신념이 깊은 열정적인 중재자', 'choihyunmin1003@hufs.ac.kr')"></div>
+        <div id="p4" class="person" style="background-image: url('IMG_3333.jpeg');" onclick="clickPerson(4, '김서영', '바이오메디컬공학부', 'INFJ', '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', '202602719@hufs.ac.kr')"></div>
+        <div id="p5" class="person" style="background-image: url('IMG_3334.jpeg');" onclick="clickPerson(5, '임정규', '바이오메디컬공학부', 'ISFJ', '일을 열심히 꾸준히 노력하는 대기만성형', 'junggyu3798@hufs.ac.kr')"></div>
     </div>
 
     <div id="overlay" class="overlay" onclick="closeInfo()"></div>
@@ -71,6 +82,75 @@
     </div>
 
     <script>
+        let currentStep = 0; // 현재 탐험 단계 (0: 시작전, 1~5: 각 단계 완료)
+
+        // 1. 탐험 시작 함수
+        function startAdventure() {
+            document.getElementById('start-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('start-screen').style.display = 'none';
+                activateNextStep(); // 첫 번째 팀원(지민님) 활성화
+            }, 500);
+        }
+
+        // 2. 다음 단계 활성화 (순서 강제)
+        function activateNextStep() {
+            currentStep++;
+            if (currentStep <= 5) {
+                const nextPerson = document.getElementById('p' + currentStep);
+                nextPerson.classList.add('active');
+            }
+        }
+
+        // 3. 팀원 클릭 시 로직
+        function clickPerson(step, name, dept, mbti, intro, email) {
+            if (step !== currentStep) return; // 순서가 아니면 클릭 무시
+
+            // 정보창 띄우기
+            showInfo(name, dept, mbti, intro, email);
+
+            // 경로 그리기 (2번째 클릭부터 이전 사람과 연결)
+            if (step > 1) {
+                drawPath(step - 1, step);
+            }
+
+            // 모든 퀘스트 완료 체크
+            if (step === 5) {
+                setTimeout(() => alert("🎉 모든 팀원을 찾았습니다! 4조 탐험 퀘스트 완료!"), 1000);
+            }
+        }
+
+        // 4. 두 지점 사이에 점선 그리기
+        function drawPath(fromIdx, toIdx) {
+            const fromEl = document.getElementById('p' + fromIdx);
+            const toEl = document.getElementById('p' + toIdx);
+            const svg = document.getElementById('path-layer');
+
+            // 위치 계산 (사진의 중앙 좌표)
+            const x1 = fromEl.offsetLeft + 32.5;
+            const y1 = fromEl.offsetTop + 32.5;
+            const x2 = toEl.offsetLeft + 32.5;
+            const y2 = toEl.offsetTop + 32.5;
+
+            const newLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            // 부드러운 곡선 효과 (Q 명령어 사용)
+            const midX = (x1 + x2) / 2 + 30; // 약간 굴곡을 줌
+            const midY = (y1 + y2) / 2 - 30;
+            const d = `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`;
+            
+            newLine.setAttribute("d", d);
+            newLine.setAttribute("class", "quest-line");
+            
+            // 선이 그려지는 애니메이션 효과
+            const length = 500; // 대략적인 길이
+            newLine.style.strokeDasharray = length;
+            newLine.style.strokeDashoffset = length;
+            svg.appendChild(newLine);
+
+            // 애니메이션 실행
+            setTimeout(() => { newLine.style.strokeDashoffset = "0"; }, 10);
+        }
+
         function showInfo(name, dept, mbti, intro, email) {
             document.getElementById('mName').innerText = name;
             document.getElementById('mDept').innerText = dept;
@@ -78,13 +158,17 @@
             document.getElementById('mIntro').innerText = intro;
             document.getElementById('mEmail').innerText = email;
             document.getElementById('mEmail').href = "mailto:" + email;
-            
             document.getElementById('modal').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
+
         function closeInfo() {
             document.getElementById('modal').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+            // 정보창을 닫으면 다음 팀원 활성화
+            if (currentStep < 5) {
+                activateNextStep();
+            }
         }
     </script>
 </body>
