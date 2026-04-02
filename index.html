@@ -19,118 +19,117 @@
         /* 팀원 사진 버튼 (플립 카드 컨테이너) */
         .person { 
             position: absolute; width: 65px; height: 65px; 
-            cursor: pointer; border-radius: 50%; z-index: 10; 
-            opacity: 0; transform: scale(0); pointer-events: none; /* 초기 비활성화 */
-            transition: opacity 0.5s, transform 0.5s ease; /* 호버 시 크기 변화 포함 */
-            perspective: 1000px; /* 3D 플립 효과용 */
+            cursor: pointer; z-index: 10; 
+            opacity: 0; transform: scale(0); pointer-events: none;
+            transition: opacity 0.5s, transform 0.5s ease;
+            perspective: 1000px; 
         }
         .person.active { opacity: 1; transform: scale(1); pointer-events: auto; }
 
-        /* [요청 1] 마우스 가져다댔을 때 크기 2배로 */
+        /* 마우스 호버 시 2배 확대 */
         .person.active:hover { transform: scale(2) rotate(5deg); z-index: 20; }
 
         /* 플립 카드 내부 박스 */
         .person-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
         .person.flipped .person-inner { transform: rotateY(180deg); }
 
-        /* 카드의 앞면과 뒷면 공통 스타일 */
+        /* 카드의 앞면(사진)과 뒷면(정보) */
         .person-front, .person-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 50%; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; background-size: cover; background-position: center; }
 
-        /* 카드 앞면 */
-        .person-front { color: white; border-radius: 50%; }
-        .person-front::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); z-index: 1; border-radius: 50%; }
-        .person-front span.initial { z-index: 2; font-weight: bold; font-size: 1.2rem; display: block; filter: none; text-shadow: 1px 1px 2px black; opacity: 1; }
+        /* 카드 앞면: 원래 버튼 이미지 유지 */
+        .person-front { background-color: white; }
+        .person-front span.name-label { position: absolute; bottom: 5px; width: 100%; background: rgba(0,0,0,0.5); color: white; font-size: 10px; z-index: 2; }
 
-        /* 카드 뒷면 */
-        .person-back { background-color: rgba(255, 253, 245, 0.95); transform: rotateY(180deg); color: #5d4037; font-size: 8px; line-height: 1.1; padding: 2px; }
-        .person-back strong { color: #8b4513; }
+        /* 카드 뒷면: 정보창 */
+        .person-back { background-color: #fffcf5; transform: rotateY(180deg); color: #5d4037; font-size: 8px; line-height: 1.2; padding: 5px; border: 2px solid gold; box-sizing: border-box; }
+        .person-back strong { color: #8b4513; font-size: 9px; }
         
-        /* 위치 설정 (원래 수치 유지) */
+        /* 현재 위치 수치 적용 */
         #p1 { top: 32%; left: 26%; }
         #p2 { top: 45%; left: 30%; }
         #p3 { top: 55%; left: 58%; }
         #p4 { top: 48%; left: 88%; }
         #p5 { top: 25%; left: 80%; }
 
-        /* 팝업 모달 (디자인 변경: 네모난 사진 & 이름만) */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; background: rgba(255, 253, 245, 0.98); border: 5px solid gold; border-radius: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.7); z-index: 100; text-align: center; overflow: hidden; font-family: 'Malgun Gothic', serif; }
-        
-        /* [요청 2] 팝업창 사진은 네모낳게 */
+        /* 팝업 모달: 네모난 사진 & 이름만 */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; background: #fffcf5; border: 5px solid gold; border-radius: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.7); z-index: 100; text-align: center; overflow: hidden; }
         .modal .modal-photo { width: 100%; height: 200px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
-        
-        /* [요청 2] 이름만 표시 */
-        .modal h2#mName { margin: 15px 0; color: #5d4037; font-weight: bold; font-size: 1.8rem; }
-        
-        .modal-body-details { display: none; } /* 상세 정보는 숨김 */
+        .modal h2 { margin: 15px 0; color: #5d4037; font-size: 1.8rem; }
         
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
-        .close-btn { margin-bottom: 20px; background: #8b4513; color: white; border: none; padding: 10px 25px; cursor: pointer; border-radius: 20px; font-weight: bold; font-size: 1rem; transition: 0.3s;}
-        .close-btn:hover { background: gold; color: #5d4037; }
+        .close-btn { margin-bottom: 20px; background: #8b4513; color: white; border: none; padding: 10px 25px; cursor: pointer; border-radius: 20px; font-weight: bold; }
 
         /* 시작 화면 */
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
-        #start-screen h2 { font-size: 3rem; margin-bottom: 20px; color: gold; text-align: center; }
-        .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .start-btn:hover { transform: scale(1.1); background: gold; color: #5d4037; }
+        .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="start-screen">
-        <h2>📜 4조 탐험 기록</h2>
+        <h2 style="font-size: 3rem; color: gold;">📜 4조 탐험 기록</h2>
         <button class="start-btn" onclick="startAdventure()">탐험 시작하기</button>
     </div>
 
     <h1>🗺️ 4조 탐험 지도</h1>
     <p class="subtitle">지도 위 사진을 클릭해 팀원 정보를 확인하세요!</p>
 
-    <div class="map-wrapper" id="map-container">
+    <div class="map-wrapper">
         <img src="85E5E5D9-C0CF-44FB-BA94-082BD6E083EB.png" alt="팀 지도">
         <svg id="path-layer" width="100%" height="100%"></svg>
         
         <div id="p1" class="person" onclick="clickPerson(1)">
             <div class="person-inner">
-                <div class="person-front" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');"><span class="initial">지민</span></div>
-                <div class="person-back"><strong>학과</strong><br>바이오메디컬공학부<br><br><strong>MBTI</strong><br>ESFJ<br><br><strong>소개</strong><br>끊임없이 도전하며...<br><br><strong>메일</strong><br>jimin0801@hufs.ac.kr</div>
+                <div class="person-front" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');"></div>
+                <div class="person-back"><strong>이지민</strong><br>바이오메디컬공학부<br>MBTI: ESFJ<br>jimin0801@hufs.ac.kr</div>
             </div>
         </div>
         
         <div id="p2" class="person" onclick="clickPerson(2)">
             <div class="person-inner">
-                <div class="person-front" style="background-image: url('IMG_3332.jpeg');"><span class="initial">연선</span></div>
-                <div class="person-back"><strong>학과</strong><br>바이오메디컬공학부<br><br><strong>MBTI</strong><br>ISTP<br><br><strong>소개</strong><br>누워있는게 제일 행복...<br><br><strong>메일</strong><br>cje7994@hufs.ac.kr</div>
+                <div class="person-front" style="background-image: url('IMG_3332.jpeg');"></div>
+                <div class="person-back"><strong>조연선</strong><br>바이오메디컬공학부<br>MBTI: ISTP<br>cje7994@hufs.ac.kr</div>
             </div>
         </div>
 
         <div id="p3" class="person" onclick="clickPerson(3)">
             <div class="person-inner">
-                <div class="person-front" style="background-image: url('IMG_3331.jpeg');"><span class="initial">현민</span></div>
-                <div class="person-back"><strong>학과</strong><br>바이오메디컬공학부<br><br><strong>MBTI</strong><br>INFP<br><br><strong>소개</strong><br>내적 신념이 깊은...<br><br><strong>메일</strong><br>choihyunmin...</div>
+                <div class="person-front" style="background-image: url('IMG_3331.jpeg');"></div>
+                <div class="person-back"><strong>최현민</strong><br>바이오메디컬공학부<br>MBTI: INFP<br>choihyunmin1003@hufs.ac.kr</div>
             </div>
         </div>
 
         <div id="p4" class="person" onclick="clickPerson(4)">
             <div class="person-inner">
-                <div class="person-front" style="background-image: url('IMG_3333.jpeg');"><span class="initial">서영</span></div>
-                <div class="person-back"><strong>학과</strong><br>바이오메디컬공학부<br><br><strong>MBTI</strong><br>INFJ<br><br><strong>소개</strong><br>묵묵히 제 몫을 다...<br><br><strong>메일</strong><br>202602719@hufs.ac.kr</div>
+                <div class="person-front" style="background-image: url('IMG_3333.jpeg');"></div>
+                <div class="person-back"><strong>김서영</strong><br>바이오메디컬공학부<br>MBTI: INFJ<br>202602719@hufs.ac.kr</div>
             </div>
         </div>
 
         <div id="p5" class="person" onclick="clickPerson(5)">
             <div class="person-inner">
-                <div class="person-front" style="background-image: url('IMG_3334.jpeg');"><span class="initial">정규</span></div>
-                <div class="person-back"><strong>학과</strong><br>바이오메디컬공학부<br><br><strong>MBTI</strong><br>ISFJ<br><br><strong>소개</strong><br>일을 열심히 꾸준히...<br><br><strong>메일</strong><br>junggyu3798@hufs.ac.kr</div>
+                <div class="person-front" style="background-image: url('IMG_3334.jpeg');"></div>
+                <div class="person-back"><strong>임정규</strong><br>바이오메디컬공학부<br>MBTI: ISFJ<br>junggyu3798@hufs.ac.kr</div>
             </div>
         </div>
     </div>
 
     <div id="overlay" class="overlay"></div>
     <div id="modal" class="modal">
-        <div id="mPhoto" class="modal-photo"></div> <h2 id="mName">이름</h2> <button class="close-btn" onclick="closeInfo()">다음 장소로</button>
+        <div id="mPhoto" class="modal-photo"></div>
+        <h2 id="mName">이름</h2>
+        <button class="close-btn" onclick="closeInfo()">다음 장소로</button>
     </div>
 
     <script>
         let currentStep = 0;
+        const teamData = {
+            1: { name: '이지민', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
+            2: { name: '조연선', photo: "url('IMG_3332.jpeg')" },
+            3: { name: '최현민', photo: "url('IMG_3331.jpeg')" },
+            4: { name: '김서영', photo: "url('IMG_3333.jpeg')" },
+            5: { name: '임정규', photo: "url('IMG_3334.jpeg')" }
+        };
 
         function startAdventure() {
             document.getElementById('start-screen').style.opacity = '0';
@@ -142,30 +141,14 @@
 
         function showPerson(step) {
             currentStep = step;
-            const person = document.getElementById('p' + step);
-            person.classList.add('active');
+            document.getElementById('p' + step).classList.add('active');
         }
-
-        // 각 팀원 정보 데이터 (플립 뒷면에 넣을 정보들)
-        const teamData = {
-            1: { name: '이지민', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
-            2: { name: '조연선', photo: "url('IMG_3332.jpeg')" },
-            3: { name: '최현민', photo: "url('IMG_3331.jpeg')" },
-            4: { name: '김서영', photo: "url('IMG_3333.jpeg')" },
-            5: { name: '임정규', photo: "url('IMG_3334.jpeg')" }
-        };
 
         function clickPerson(step) {
             if (step !== currentStep) return;
             const data = teamData[step];
-            showModal(data.name, data.photo);
-        }
-
-        // [요청 2] 팝업창 디자인: 네모난 사진 & 이름만 표시
-        function showModal(name, photoUrl) {
-            document.getElementById('mName').innerText = name;
-            document.getElementById('mPhoto').style.backgroundImage = photoUrl;
-            
+            document.getElementById('mName').innerText = data.name;
+            document.getElementById('mPhoto').style.backgroundImage = data.photo;
             document.getElementById('modal').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
@@ -174,11 +157,10 @@
             document.getElementById('modal').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
             
-            // [요청 3] 카드를 한 번 더 누르면 뒤집히는 대신, 팝업 닫을 때 자동으로 뒤집어 상세 정보 노출
+            // 팝업 닫을 때 지도 위 버튼을 뒤집어서 정보 노출
             const currentPerson = document.getElementById('p' + currentStep);
             currentPerson.classList.add('flipped');
 
-            // 기존 순차적 경로 그리기 로직 유지
             if (currentStep < 5) {
                 const nextStep = currentStep + 1;
                 drawPath(currentStep, nextStep); 
@@ -188,7 +170,6 @@
             }
         }
 
-        // 기존 황금 점선 그리기 로직 유지
         function drawPath(fromIdx, toIdx) {
             const fromEl = document.getElementById('p' + fromIdx);
             const toEl = document.getElementById('p' + toIdx);
@@ -206,8 +187,6 @@
             
             newLine.setAttribute("d", d);
             newLine.setAttribute("class", "quest-line");
-            newLine.id = "line-" + fromIdx;
-            
             svg.appendChild(newLine);
 
             setTimeout(() => { newLine.style.strokeDashoffset = "0"; }, 50);
