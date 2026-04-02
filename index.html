@@ -36,7 +36,7 @@
         #p4 { top: 48%; left: 88%; }
         #p5 { top: 25%; left: 80%; }
 
-        /* [수정] 탐험 완료하기 버튼 스타일 */
+        /* 탐험 완료하기 버튼 스타일 */
         .finish-btn {
             position: absolute; bottom: 20px; right: 20px;
             padding: 10px 20px; background: #5d4037; color: white;
@@ -48,21 +48,23 @@
         /* 팝업 모달 스타일 */
         .modal-container { 
             display: none; position: fixed; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); width: 300px; height: 400px; 
+            transform: translate(-50%, -50%); width: 300px; height: 430px; 
             perspective: 1000px; z-index: 100; 
         }
         .modal-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
         .modal-container.flipped .modal-inner { transform: rotateY(180deg); }
         .modal-front, .modal-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 5px solid gold; box-shadow: 0 0 50px rgba(0,0,0,0.7); overflow: hidden; display: flex; flex-direction: column; background: #fffcf5; }
-        .modal-front-photo { width: 100%; height: 280px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
+        .modal-front-photo { width: 100%; height: 300px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
         .modal-front h2 { margin: auto; color: #5d4037; font-size: 2rem; }
         .click-hint { font-size: 0.9rem; color: #a0522d; margin-bottom: 15px; text-align: center; font-weight: bold; }
-        .modal-back { transform: rotateY(180deg); padding: 30px 20px; text-align: center; justify-content: flex-start; }
-        .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 10px; margin-top: 0; }
-        .info-item { margin: 15px 0; font-size: 1rem; color: #5d4037; text-align: left; }
-        .info-label { font-weight: bold; color: #8b4513; display: inline-block; width: 60px; }
+        
+        .modal-back { transform: rotateY(180deg); padding: 25px 20px; text-align: center; justify-content: flex-start; }
+        .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 8px; margin-top: 0; margin-bottom: 10px; }
+        .info-item { margin: 8px 0; font-size: 0.95rem; color: #5d4037; text-align: left; }
+        .info-label { font-weight: bold; color: #8b4513; display: inline-block; width: 65px; }
+        
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
-        .next-btn { margin-top: auto; margin-bottom: 20px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 80%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
+        .next-btn { margin-top: auto; margin-bottom: 15px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 85%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
 
         /* 시작 화면 */
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
@@ -102,9 +104,11 @@
             </div>
             <div class="modal-back">
                 <h3 id="mNameBack">이름</h3>
+                <div class="info-item"><span class="info-label">학교</span> <span>한국외국어대학교</span></div>
                 <div class="info-item"><span class="info-label">학과</span> <span>바이오메디컬공학부</span></div>
                 <div class="info-item"><span class="info-label">MBTI</span> <span id="mMbti"></span></div>
-                <div class="info-item"><span class="info-label">소개</span> <br><span id="mIntro" style="font-size:0.9rem;"></span></div>
+                <div class="info-item"><span class="info-label">소개</span> <br><span id="mIntro" style="font-size:0.85rem;"></span></div>
+                <div class="info-item"><span class="info-label">연락처</span> <span id="mPhone"></span></div>
                 <div class="info-item"><span class="info-label">메일</span> <br><span id="mEmail" style="font-size:0.8rem;"></span></div>
                 <button class="next-btn" onclick="event.stopPropagation(); closeInfo();">탐험 계속하기</button>
             </div>
@@ -114,11 +118,11 @@
     <script>
         let currentStep = 0;
         const teamData = {
-            1: { name: '이지민', mbti: 'ESFJ', intro: '끊임없이 도전하며 성장하는 실행가', email: 'jimin0801@hufs.ac.kr', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
-            2: { name: '조연선', mbti: 'ISTP', intro: '누워있는게 제일 행복한 사람', email: 'cje7994@hufs.ac.kr', photo: "url('IMG_3332.jpeg')" },
-            3: { name: '최현민', mbti: 'INFP', intro: '내적 신념이 깊은 열정적인 중재자', email: 'choihyunmin1003@hufs.ac.kr', photo: "url('IMG_3331.jpeg')" },
-            4: { name: '김서영', mbti: 'INFJ', intro: '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', email: '202602719@hufs.ac.kr', photo: "url('IMG_3333.jpeg')" },
-            5: { name: '임정규', mbti: 'ISFJ', intro: '일을 열심히 꾸준히 노력하는 대기만성형', email: 'junggyu3798@hufs.ac.kr', photo: "url('IMG_3334.jpeg')" }
+            1: { name: '이지민', mbti: 'ESFJ', intro: '끊임없이 도전하며 성장하는 실행가', phone: '010-6312-6561', email: 'jimin0801@hufs.ac.kr', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
+            2: { name: '조연선', mbti: 'ISTP', intro: '누워있는게 제일 행복한 사람', phone: '010-2105-4280', email: 'cje7994@hufs.ac.kr', photo: "url('IMG_3332.jpeg')" },
+            3: { name: '최현민', mbti: 'INFP', intro: '내적 신념이 깊은 열정적인 중재자', phone: '010-4127-1879', email: 'choihyunmin1003@hufs.ac.kr', photo: "url('IMG_3331.jpeg')" },
+            4: { name: '김서영', mbti: 'INFJ', intro: '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', phone: '010-7635-1312', email: '202602719@hufs.ac.kr', photo: "url('IMG_3333.jpeg')" },
+            5: { name: '임정규', mbti: 'ISFJ', intro: '일을 열심히 꾸준히 노력하는 대기만성형', phone: '010-3590-3798', email: 'junggyu3798@hufs.ac.kr', photo: "url('IMG_3334.jpeg')" }
         };
 
         function startAdventure() {
@@ -144,6 +148,7 @@
             document.getElementById('mPhoto').style.backgroundImage = data.photo;
             document.getElementById('mMbti').innerText = data.mbti;
             document.getElementById('mIntro').innerText = data.intro;
+            document.getElementById('mPhone').innerText = data.phone; // 전화번호 반영
             document.getElementById('mEmail').innerText = data.email;
 
             document.getElementById('modal-container').classList.remove('flipped');
@@ -159,12 +164,10 @@
                 drawPath(currentStep, nextStep); 
                 setTimeout(() => { activatePerson(nextStep); }, 1000);
             } else {
-                // 정규님까지 정상적으로 마쳤을 때도 완료 메시지 표시 가능
                 alert("🎉 모든 팀원을 만났습니다! 탐험을 완료하였습니다.");
             }
         }
 
-        // [수정] 완료 로직 및 메시지 알림
         function finishAll() {
             for(let i=1; i<5; i++) {
                 if(!document.getElementById('line-'+i)) {
@@ -177,8 +180,6 @@
                 p.classList.add('active');
             }
             currentStep = 5;
-            
-            // 버튼 클릭 시 즉시 알림창 띄우기
             alert("탐험을 완료하였습니다!");
         }
 
