@@ -12,7 +12,18 @@
         .map-wrapper img { display: block; max-width: 100%; height: auto; }
         
         #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        .quest-line { stroke: #FFD700; stroke-width: 6; stroke-dasharray: 12, 12; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); transition: stroke-dashoffset 1.5s ease-in-out; stroke-dashoffset: 1000; }
+        
+        /* [수정] 점선이 글씨 쓰듯 생겨나는 효과 스타일 */
+        .quest-line { 
+            stroke: #FFD700; 
+            stroke-width: 6; 
+            fill: none; 
+            stroke-linecap: round; 
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
+            /* 초기 상태: 점선 마디 설정 및 완전히 숨김 */
+            stroke-dasharray: 12, 12; 
+            transition: stroke-dashoffset 1.5s linear; 
+        }
 
         .person { 
             position: absolute; width: 65px; height: 65px; 
@@ -62,9 +73,7 @@
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
         .next-btn { margin-top: auto; margin-bottom: 10px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 90%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
 
-        /* 시작 화면 스타일 */
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
-        /* 제목 스타일 수정: 텍스트 줄바꿈 방지 */
         #start-screen h2 { font-size: 3rem; color: gold; white-space: nowrap; margin-bottom: 20px;}
         .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; }
     </style>
@@ -160,7 +169,7 @@
             if (currentStep < 5) {
                 const nextStep = currentStep + 1;
                 drawPath(currentStep, nextStep); 
-                setTimeout(() => { activatePerson(nextStep); }, 1000);
+                setTimeout(() => { activatePerson(nextStep); }, 1500);
             } else {
                 alert("🎉 모든 팀원을 만났습니다! 탐험을 완료하였습니다.");
             }
@@ -181,6 +190,7 @@
             alert("탐험을 완료하였습니다!");
         }
 
+        /* [수정] 점선이 점차적으로 생겨나는 애니메이션 함수 */
         function drawPath(fromIdx, toIdx, instant = false) {
             if(document.getElementById('line-'+fromIdx)) return;
             const fromEl = document.getElementById('p' + fromIdx);
@@ -190,6 +200,7 @@
             const y1 = fromEl.offsetTop + 32.5;
             const x2 = toEl.offsetLeft + 32.5;
             const y2 = toEl.offsetTop + 32.5;
+            
             const newLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
             const midX = (x1 + x2) / 2 + (toIdx % 2 === 0 ? 30 : -30); 
             const midY = (y1 + y2) / 2 - 50;
@@ -197,12 +208,25 @@
             newLine.setAttribute("d", d);
             newLine.setAttribute("class", "quest-line");
             newLine.setAttribute("id", "line-" + fromIdx);
+            
             svg.appendChild(newLine);
+
+            // 선의 전체 길이를 구합니다.
+            const totalLen = newLine.getTotalLength();
+            
+            // 점선 마디(12px)와 공백(12px) 설정을 유지하면서, 
+            // offset을 선의 길이만큼 주어 처음엔 아무것도 안 보이게 합니다.
+            newLine.style.strokeDasharray = "12, 12"; 
+            newLine.style.strokeDashoffset = totalLen;
+
             if(instant) {
                 newLine.style.transition = 'none';
                 newLine.style.strokeDashoffset = "0";
             } else {
-                setTimeout(() => { newLine.style.strokeDashoffset = "0"; }, 50);
+                // 브라우저가 위치를 계산할 시간을 준 뒤 offset을 0으로 만들어 슥~ 생겨나게 합니다.
+                requestAnimationFrame(() => {
+                    newLine.style.strokeDashoffset = "0";
+                });
             }
         }
     </script>
