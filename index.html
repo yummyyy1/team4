@@ -12,7 +12,17 @@
         .map-wrapper img { display: block; max-width: 100%; height: auto; }
         
         #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        .quest-line { stroke: #FFD700; stroke-width: 6; stroke-dasharray: 12, 12; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); transition: stroke-dashoffset 1.5s ease-in-out; stroke-dashoffset: 1000; }
+        
+        /* [수정] 쭉 그어지는 애니메이션 스타일 */
+        .quest-line { 
+            stroke: #FFD700; 
+            stroke-width: 6; 
+            stroke-dasharray: 12, 12; /* 점선 스타일 유지 */
+            fill: none; 
+            stroke-linecap: round; 
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
+            /* transition은 JavaScript에서 동적으로 제어합니다. */
+        }
 
         .person { 
             position: absolute; width: 65px; height: 65px; 
@@ -55,26 +65,9 @@
         .modal-back { transform: rotateY(180deg); padding: 25px 20px; text-align: center; display: flex; flex-direction: column; }
         .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px; }
         
-        /* [수정 핵심] 모든 항목을 가로 정렬(Flex)로 통일 */
-        .info-item { 
-            display: flex; 
-            align-items: flex-start; /* 텍스트가 길어질 경우 위쪽 정렬 */
-            margin: 10px 0; 
-            font-size: 0.9rem; 
-            color: #5d4037; 
-            text-align: left; 
-        }
-        .info-label { 
-            font-weight: bold; 
-            color: #8b4513; 
-            width: 55px; /* 라벨 너비 고정 */
-            flex-shrink: 0; /* 라벨 크기가 줄어들지 않게 고정 */
-        }
-        .info-content { 
-            flex: 1; /* 남은 공간 모두 사용 */
-            word-break: break-all; /* 메일 등 긴 단어 줄바꿈 허용 */
-            line-height: 1.3;
-        }
+        .info-item { display: flex; align-items: flex-start; margin: 10px 0; font-size: 0.9rem; color: #5d4037; text-align: left; }
+        .info-label { font-weight: bold; color: #8b4513; width: 55px; flex-shrink: 0; }
+        .info-content { flex: 1; word-break: break-all; line-height: 1.3; }
         
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
         .next-btn { margin-top: auto; margin-bottom: 10px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 90%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
@@ -174,7 +167,8 @@
             if (currentStep < 5) {
                 const nextStep = currentStep + 1;
                 drawPath(currentStep, nextStep); 
-                setTimeout(() => { activatePerson(nextStep); }, 1000);
+                // 길 그리기 애니메이션 시간(1.5초) 후 다음 사람 활성화
+                setTimeout(() => { activatePerson(nextStep); }, 1500);
             } else {
                 alert("🎉 모든 팀원을 만났습니다! 탐험을 완료하였습니다.");
             }
@@ -195,6 +189,7 @@
             alert("탐험을 완료하였습니다!");
         }
 
+        /* [수정] 한 번에 쭉 그어지는 애니메이션 로직 */
         function drawPath(fromIdx, toIdx, instant = false) {
             if(document.getElementById('line-'+fromIdx)) return;
             const fromEl = document.getElementById('p' + fromIdx);
@@ -204,6 +199,7 @@
             const y1 = fromEl.offsetTop + 32.5;
             const x2 = toEl.offsetLeft + 32.5;
             const y2 = toEl.offsetTop + 32.5;
+            
             const newLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
             const midX = (x1 + x2) / 2 + (toIdx % 2 === 0 ? 30 : -30); 
             const midY = (y1 + y2) / 2 - 50;
@@ -211,12 +207,35 @@
             newLine.setAttribute("d", d);
             newLine.setAttribute("class", "quest-line");
             newLine.setAttribute("id", "line-" + fromIdx);
+            
             svg.appendChild(newLine);
+
+            // [핵심] 선의 실제 길이를 계산하여 애니메이션 적용
+            const pathLength = newLine.getTotalLength();
+            
+            // 시작점: 선의 길이만큼 offset을 주어 숨김
+            newLine.style.strokeDasharray = `${pathLength} ${pathLength}`;
+            newLine.style.strokeDashoffset = pathLength;
+
             if(instant) {
+                // 즉시 완료 시 애니메이션 없이 그리기
                 newLine.style.transition = 'none';
                 newLine.style.strokeDashoffset = "0";
+                // 점선 스타일로 다시 돌려놓기 (안하면 실선으로 보임)
+                setTimeout(() => {
+                    newLine.style.strokeDasharray = "12, 12";
+                }, 10);
             } else {
-                setTimeout(() => { newLine.style.strokeDashoffset = "0"; }, 50);
+                // 부드럽게 쭉 그어지는 효과 (1.5초)
+                newLine.style.transition = 'stroke-dashoffset 1.5s ease-in-out';
+                // 트리거를 위한 requestAnimationFrame
+                requestAnimationFrame(() => {
+                    newLine.style.strokeDashoffset = "0";
+                });
+                // 애니메이션 완료 후 점선 스타일로 복귀
+                setTimeout(() => {
+                    newLine.style.strokeDasharray = "12, 12";
+                }, 1500);
             }
         }
     </script>
