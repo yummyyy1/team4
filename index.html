@@ -8,15 +8,12 @@
         h1 { color: #5d4037; text-shadow: 1px 1px 2px white; z-index: 1; margin-bottom: 0;}
         p.subtitle { margin-top: 5px; color: #7f5539; font-size: 1.1rem; font-weight: bold; }
         
-        /* 지도 컨테이너 */
         .map-wrapper { position: relative; border: 12px solid #8b4513; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #eee; display: inline-block; }
         .map-wrapper img { display: block; max-width: 100%; height: auto; }
         
-        /* SVG 경로 레이어 */
         #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         .quest-line { stroke: #FFD700; stroke-width: 6; stroke-dasharray: 12, 12; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); transition: stroke-dashoffset 1.5s ease-in-out; stroke-dashoffset: 1000; }
 
-        /* 지도 위 버튼 */
         .person { 
             position: absolute; width: 65px; height: 65px; 
             cursor: pointer; z-index: 10; border-radius: 50%;
@@ -29,14 +26,12 @@
         .person.locked { pointer-events: none; }
         .person.active:hover { transform: scale(2) rotate(5deg); z-index: 20; border-color: gold; }
 
-        /* 위치 설정 */
         #p1 { top: 32%; left: 18%; }
         #p2 { top: 49%; left: 30%; }
         #p3 { top: 55%; left: 58%; }
         #p4 { top: 48%; left: 88%; }
         #p5 { top: 25%; left: 80%; }
 
-        /* 탐험 완료하기 버튼 스타일 */
         .finish-btn {
             position: absolute; bottom: 20px; right: 20px;
             padding: 10px 20px; background: #5d4037; color: white;
@@ -45,28 +40,45 @@
         }
         .finish-btn:hover { background: #8b4513; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
-        /* 팝업 모달 스타일 */
         .modal-container { 
             display: none; position: fixed; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); width: 300px; height: 430px; 
+            transform: translate(-50%, -50%); width: 320px; height: 450px; 
             perspective: 1000px; z-index: 100; 
         }
         .modal-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
         .modal-container.flipped .modal-inner { transform: rotateY(180deg); }
         .modal-front, .modal-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 5px solid gold; box-shadow: 0 0 50px rgba(0,0,0,0.7); overflow: hidden; display: flex; flex-direction: column; background: #fffcf5; }
-        .modal-front-photo { width: 100%; height: 300px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
+        .modal-front-photo { width: 100%; height: 320px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
         .modal-front h2 { margin: auto; color: #5d4037; font-size: 2rem; }
         .click-hint { font-size: 0.9rem; color: #a0522d; margin-bottom: 15px; text-align: center; font-weight: bold; }
         
-        .modal-back { transform: rotateY(180deg); padding: 25px 20px; text-align: center; justify-content: flex-start; }
-        .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 8px; margin-top: 0; margin-bottom: 10px; }
-        .info-item { margin: 8px 0; font-size: 0.95rem; color: #5d4037; text-align: left; }
-        .info-label { font-weight: bold; color: #8b4513; display: inline-block; width: 65px; }
+        .modal-back { transform: rotateY(180deg); padding: 25px 20px; text-align: center; display: flex; flex-direction: column; }
+        .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px; }
+        
+        /* [수정 핵심] 모든 항목을 가로 정렬(Flex)로 통일 */
+        .info-item { 
+            display: flex; 
+            align-items: flex-start; /* 텍스트가 길어질 경우 위쪽 정렬 */
+            margin: 10px 0; 
+            font-size: 0.9rem; 
+            color: #5d4037; 
+            text-align: left; 
+        }
+        .info-label { 
+            font-weight: bold; 
+            color: #8b4513; 
+            width: 55px; /* 라벨 너비 고정 */
+            flex-shrink: 0; /* 라벨 크기가 줄어들지 않게 고정 */
+        }
+        .info-content { 
+            flex: 1; /* 남은 공간 모두 사용 */
+            word-break: break-all; /* 메일 등 긴 단어 줄바꿈 허용 */
+            line-height: 1.3;
+        }
         
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
-        .next-btn { margin-top: auto; margin-bottom: 15px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 85%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
+        .next-btn { margin-top: auto; margin-bottom: 10px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 90%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
 
-        /* 시작 화면 */
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
         .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; }
     </style>
@@ -104,12 +116,12 @@
             </div>
             <div class="modal-back">
                 <h3 id="mNameBack">이름</h3>
-                <div class="info-item"><span class="info-label">학교</span> <span>한국외국어대학교</span></div>
-                <div class="info-item"><span class="info-label">학과</span> <span>바이오메디컬공학부</span></div>
-                <div class="info-item"><span class="info-label">MBTI</span> <span id="mMbti"></span></div>
-                <div class="info-item"><span class="info-label">소개</span> <br><span id="mIntro" style="font-size:0.85rem;"></span></div>
-                <div class="info-item"><span class="info-label">연락처</span> <span id="mPhone"></span></div>
-                <div class="info-item"><span class="info-label">메일</span> <br><span id="mEmail" style="font-size:0.8rem;"></span></div>
+                <div class="info-item"><span class="info-label">학교</span><span class="info-content">한국외국어대학교</span></div>
+                <div class="info-item"><span class="info-label">학과</span><span class="info-content">바이오메디컬공학부</span></div>
+                <div class="info-item"><span class="info-label">MBTI</span><span id="mMbti" class="info-content"></span></div>
+                <div class="info-item"><span class="info-label">소개</span><span id="mIntro" class="info-content"></span></div>
+                <div class="info-item"><span class="info-label">연락처</span><span id="mPhone" class="info-content"></span></div>
+                <div class="info-item"><span class="info-label">메일</span><span id="mEmail" class="info-content"></span></div>
                 <button class="next-btn" onclick="event.stopPropagation(); closeInfo();">탐험 계속하기</button>
             </div>
         </div>
@@ -148,7 +160,7 @@
             document.getElementById('mPhoto').style.backgroundImage = data.photo;
             document.getElementById('mMbti').innerText = data.mbti;
             document.getElementById('mIntro').innerText = data.intro;
-            document.getElementById('mPhone').innerText = data.phone; // 전화번호 반영
+            document.getElementById('mPhone').innerText = data.phone;
             document.getElementById('mEmail').innerText = data.email;
 
             document.getElementById('modal-container').classList.remove('flipped');
