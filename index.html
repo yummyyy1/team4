@@ -36,7 +36,7 @@
         #p4 { top: 48%; left: 88%; }
         #p5 { top: 25%; left: 80%; }
 
-        /* 탐험 종료 버튼 스타일 */
+        /* [수정] 탐험 완료하기 버튼 스타일 */
         .finish-btn {
             position: absolute; bottom: 20px; right: 20px;
             padding: 10px 20px; background: #5d4037; color: white;
@@ -56,10 +56,7 @@
         .modal-front, .modal-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 5px solid gold; box-shadow: 0 0 50px rgba(0,0,0,0.7); overflow: hidden; display: flex; flex-direction: column; background: #fffcf5; }
         .modal-front-photo { width: 100%; height: 280px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
         .modal-front h2 { margin: auto; color: #5d4037; font-size: 2rem; }
-        
-        /* [수정 부분] 상세정보 보기 문구 스타일 */
         .click-hint { font-size: 0.9rem; color: #a0522d; margin-bottom: 15px; text-align: center; font-weight: bold; }
-
         .modal-back { transform: rotateY(180deg); padding: 30px 20px; text-align: center; justify-content: flex-start; }
         .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 10px; margin-top: 0; }
         .info-item { margin: 15px 0; font-size: 1rem; color: #5d4037; text-align: left; }
@@ -92,7 +89,7 @@
         <div id="p4" class="person locked" style="background-image: url('IMG_3333.jpeg');" onclick="clickPerson(4)"></div>
         <div id="p5" class="person locked" style="background-image: url('IMG_3334.jpeg');" onclick="clickPerson(5)"></div>
 
-        <button class="finish-btn" onclick="finishAll()">탐험 종료하기</button>
+        <button class="finish-btn" onclick="finishAll()">탐험 완료하기</button>
     </div>
 
     <div id="overlay" class="overlay"></div>
@@ -161,9 +158,13 @@
                 const nextStep = currentStep + 1;
                 drawPath(currentStep, nextStep); 
                 setTimeout(() => { activatePerson(nextStep); }, 1000);
+            } else {
+                // 정규님까지 정상적으로 마쳤을 때도 완료 메시지 표시 가능
+                alert("🎉 모든 팀원을 만났습니다! 탐험을 완료하였습니다.");
             }
         }
 
+        // [수정] 완료 로직 및 메시지 알림
         function finishAll() {
             for(let i=1; i<5; i++) {
                 if(!document.getElementById('line-'+i)) {
@@ -176,6 +177,9 @@
                 p.classList.add('active');
             }
             currentStep = 5;
+            
+            // 버튼 클릭 시 즉시 알림창 띄우기
+            alert("탐험을 완료하였습니다!");
         }
 
         function drawPath(fromIdx, toIdx, instant = false) {
