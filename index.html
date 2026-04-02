@@ -16,35 +16,19 @@
         #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         .quest-line { stroke: #FFD700; stroke-width: 6; stroke-dasharray: 12, 12; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); transition: stroke-dashoffset 1.5s ease-in-out; stroke-dashoffset: 1000; }
 
-        /* 팀원 사진 버튼 (플립 카드 컨테이너) */
+        /* 지도 위 버튼 (그대로 유지) */
         .person { 
             position: absolute; width: 65px; height: 65px; 
-            cursor: pointer; z-index: 10; 
-            transition: transform 0.5s ease, filter 0.3s;
-            perspective: 1000px; 
-            filter: grayscale(80%); /* 비활성 상태는 흑백 느낌 */
-            opacity: 0.8;
+            cursor: pointer; z-index: 10; border-radius: 50%;
+            border: 3px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            background-size: cover; background-position: center;
+            transition: transform 0.3s ease, filter 0.3s;
+            filter: grayscale(80%); opacity: 0.8;
         }
-        /* [수정] 버튼은 처음부터 보이지만, 활성화된 버튼만 선명하고 클릭 가능 */
         .person.active { filter: grayscale(0%); opacity: 1; pointer-events: auto; }
-        .person.locked { pointer-events: none; cursor: default; }
+        .person.locked { pointer-events: none; }
+        .person.active:hover { transform: scale(2) rotate(5deg); z-index: 20; border-color: gold; }
 
-        /* 마우스 호버 시 2배 확대 */
-        .person.active:hover { transform: scale(2) rotate(5deg); z-index: 20; }
-
-        /* 플립 카드 내부 박스 */
-        .person-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
-        .person.flipped .person-inner { transform: rotateY(180deg); }
-
-        /* 카드의 앞면(사진)과 뒷면(정보) */
-        .person-front, .person-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 50%; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; background-size: cover; background-position: center; }
-
-        .person-front { background-color: white; }
-        
-        /* 카드 뒷면: 정보창 */
-        .person-back { background-color: #fffcf5; transform: rotateY(180deg); color: #5d4037; font-size: 8px; line-height: 1.2; padding: 5px; border: 2px solid gold; box-sizing: border-box; }
-        .person-back strong { color: #8b4513; font-size: 9px; }
-        
         /* 위치 설정 */
         #p1 { top: 32%; left: 26%; }
         #p2 { top: 45%; left: 30%; }
@@ -52,13 +36,41 @@
         #p4 { top: 48%; left: 88%; }
         #p5 { top: 25%; left: 80%; }
 
-        /* 팝업 모달 */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; background: #fffcf5; border: 5px solid gold; border-radius: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.7); z-index: 100; text-align: center; overflow: hidden; }
-        .modal .modal-photo { width: 100%; height: 200px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
-        .modal h2 { margin: 15px 0; color: #5d4037; font-size: 1.8rem; }
-        
+        /* [핵심] 뒤집히는 팝업창(모달) 스타일 */
+        .modal-container { 
+            display: none; position: fixed; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); width: 300px; height: 400px; 
+            perspective: 1000px; z-index: 100; 
+        }
+        .modal-inner { 
+            position: relative; width: 100%; height: 100%; 
+            transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer;
+        }
+        /* flipped 클래스가 붙으면 팝업이 뒤집힘 */
+        .modal-container.flipped .modal-inner { transform: rotateY(180deg); }
+
+        .modal-front, .modal-back { 
+            position: absolute; width: 100%; height: 100%; 
+            backface-visibility: hidden; border-radius: 20px; 
+            border: 5px solid gold; box-shadow: 0 0 50px rgba(0,0,0,0.7); 
+            overflow: hidden; display: flex; flex-direction: column; background: #fffcf5;
+        }
+
+        /* 팝업 앞면: 사진과 이름 */
+        .modal-front-photo { width: 100%; height: 280px; background-size: cover; background-position: center; border-bottom: 5px solid gold; }
+        .modal-front h2 { margin: auto; color: #5d4037; font-size: 2rem; }
+        .click-hint { font-size: 0.8rem; color: #a0522d; margin-bottom: 10px; }
+
+        /* 팝업 뒷면: 상세 정보 */
+        .modal-back { 
+            transform: rotateY(180deg); padding: 30px 20px; text-align: center; justify-content: flex-start;
+        }
+        .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 10px; margin-top: 0; }
+        .info-item { margin: 15px 0; font-size: 1rem; color: #5d4037; text-align: left; }
+        .info-label { font-weight: bold; color: #8b4513; display: inline-block; width: 60px; }
+
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
-        .close-btn { margin-bottom: 20px; background: #8b4513; color: white; border: none; padding: 10px 25px; cursor: pointer; border-radius: 20px; font-weight: bold; }
+        .next-btn { margin-top: auto; margin-bottom: 20px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 80%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
 
         /* 시작 화면 */
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
@@ -73,70 +85,53 @@
     </div>
 
     <h1>🗺️ 4조 탐험 지도</h1>
-    <p class="subtitle">순서대로 팀원을 클릭해 황금 길을 완성하세요!</p>
+    <p class="subtitle">팀원을 클릭하고 팝업창을 한 번 더 클릭해 정보를 확인하세요!</p>
 
     <div class="map-wrapper">
         <img src="85E5E5D9-C0CF-44FB-BA94-082BD6E083EB.png" alt="팀 지도">
         <svg id="path-layer" width="100%" height="100%"></svg>
         
-        <div id="p1" class="person locked" onclick="clickPerson(1)">
-            <div class="person-inner">
-                <div class="person-front" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');"></div>
-                <div class="person-back"><strong>이지민</strong><br>바이오메디컬공학부<br>MBTI: ESFJ<br>jimin0801@hufs.ac.kr</div>
-            </div>
-        </div>
-        
-        <div id="p2" class="person locked" onclick="clickPerson(2)">
-            <div class="person-inner">
-                <div class="person-front" style="background-image: url('IMG_3332.jpeg');"></div>
-                <div class="person-back"><strong>조연선</strong><br>바이오메디컬공학부<br>MBTI: ISTP<br>cje7994@hufs.ac.kr</div>
-            </div>
-        </div>
-
-        <div id="p3" class="person locked" onclick="clickPerson(3)">
-            <div class="person-inner">
-                <div class="person-front" style="background-image: url('IMG_3331.jpeg');"></div>
-                <div class="person-back"><strong>최현민</strong><br>바이오메디컬공학부<br>MBTI: INFP<br>choihyunmin1003@hufs.ac.kr</div>
-            </div>
-        </div>
-
-        <div id="p4" class="person locked" onclick="clickPerson(4)">
-            <div class="person-inner">
-                <div class="person-front" style="background-image: url('IMG_3333.jpeg');"></div>
-                <div class="person-back"><strong>김서영</strong><br>바이오메디컬공학부<br>MBTI: INFJ<br>202602719@hufs.ac.kr</div>
-            </div>
-        </div>
-
-        <div id="p5" class="person locked" onclick="clickPerson(5)">
-            <div class="person-inner">
-                <div class="person-front" style="background-image: url('IMG_3334.jpeg');"></div>
-                <div class="person-back"><strong>임정규</strong><br>바이오메디컬공학부<br>MBTI: ISFJ<br>junggyu3798@hufs.ac.kr</div>
-            </div>
-        </div>
+        <div id="p1" class="person locked" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');" onclick="clickPerson(1)"></div>
+        <div id="p2" class="person locked" style="background-image: url('IMG_3332.jpeg');" onclick="clickPerson(2)"></div>
+        <div id="p3" class="person locked" style="background-image: url('IMG_3331.jpeg');" onclick="clickPerson(3)"></div>
+        <div id="p4" class="person locked" style="background-image: url('IMG_3333.jpeg');" onclick="clickPerson(4)"></div>
+        <div id="p5" class="person locked" style="background-image: url('IMG_3334.jpeg');" onclick="clickPerson(5)"></div>
     </div>
 
     <div id="overlay" class="overlay"></div>
-    <div id="modal" class="modal">
-        <div id="mPhoto" class="modal-photo"></div>
-        <h2 id="mName">이름</h2>
-        <button class="close-btn" onclick="closeInfo()">탐험 계속하기</button>
+    <div id="modal-container" class="modal-container">
+        <div class="modal-inner" onclick="this.parentElement.classList.toggle('flipped')">
+            <div class="modal-front">
+                <div id="mPhoto" class="modal-front-photo"></div>
+                <h2 id="mName">이름</h2>
+                <div class="click-hint">이 창을 클릭하면 상세정보가 나와요! 🔄</div>
+            </div>
+            <div class="modal-back">
+                <h3 id="mNameBack">이름</h3>
+                <div class="info-item"><span class="info-label">학과</span> <span id="mDept">바이오메디컬공학부</span></div>
+                <div class="info-item"><span class="info-label">MBTI</span> <span id="mMbti"></span></div>
+                <div class="info-item"><span class="info-label">소개</span> <br><span id="mIntro" style="font-size:0.9rem;"></span></div>
+                <div class="info-item"><span class="info-label">메일</span> <br><span id="mEmail" style="font-size:0.8rem;"></span></div>
+                <button class="next-btn" onclick="event.stopPropagation(); closeInfo();">탐험 계속하기</button>
+            </div>
+        </div>
     </div>
 
     <script>
         let currentStep = 0;
         const teamData = {
-            1: { name: '이지민', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
-            2: { name: '조연선', photo: "url('IMG_3332.jpeg')" },
-            3: { name: '최현민', photo: "url('IMG_3331.jpeg')" },
-            4: { name: '김서영', photo: "url('IMG_3333.jpeg')" },
-            5: { name: '임정규', photo: "url('IMG_3334.jpeg')" }
+            1: { name: '이지민', dept: '바이오메디컬공학부', mbti: 'ESFJ', intro: '끊임없이 도전하며 성장하는 실행가', email: 'jimin0801@hufs.ac.kr', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
+            2: { name: '조연선', dept: '바이오메디컬공학부', mbti: 'ISTP', intro: '누워있는게 제일 행복한 사람', email: 'cje7994@hufs.ac.kr', photo: "url('IMG_3332.jpeg')" },
+            3: { name: '최현민', dept: '바이오메디컬공학부', mbti: 'INFP', intro: '내적 신념이 깊은 열정적인 중재자', email: 'choihyunmin1003@hufs.ac.kr', photo: "url('IMG_3331.jpeg')" },
+            4: { name: '김서영', dept: '바이오메디컬공학부', mbti: 'INFJ', intro: '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', email: '202602719@hufs.ac.kr', photo: "url('IMG_3333.jpeg')" },
+            5: { name: '임정규', dept: '바이오메디컬공학부', mbti: 'ISFJ', intro: '일을 열심히 꾸준히 노력하는 대기만성형', email: 'junggyu3798@hufs.ac.kr', photo: "url('IMG_3334.jpeg')" }
         };
 
         function startAdventure() {
             document.getElementById('start-screen').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('start-screen').style.display = 'none';
-                activatePerson(1); // 1번 활성화
+                activatePerson(1);
             }, 500);
         }
 
@@ -150,27 +145,30 @@
         function clickPerson(step) {
             if (step !== currentStep) return;
             const data = teamData[step];
+            
+            // 데이터 매핑
             document.getElementById('mName').innerText = data.name;
+            document.getElementById('mNameBack').innerText = data.name;
             document.getElementById('mPhoto').style.backgroundImage = data.photo;
-            document.getElementById('modal').style.display = 'block';
+            document.getElementById('mDept').innerText = data.dept;
+            document.getElementById('mMbti').innerText = data.mbti;
+            document.getElementById('mIntro').innerText = data.intro;
+            document.getElementById('mEmail').innerText = data.email;
+
+            // 팝업 초기화 (항상 앞면부터 보이게)
+            document.getElementById('modal-container').classList.remove('flipped');
+            document.getElementById('modal-container').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
         function closeInfo() {
-            document.getElementById('modal').style.display = 'none';
+            document.getElementById('modal-container').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
             
-            const currentPerson = document.getElementById('p' + currentStep);
-            currentPerson.classList.add('flipped');
-
             if (currentStep < 5) {
                 const nextStep = currentStep + 1;
-                drawPath(currentStep, nextStep); // 길 그리기
-                
-                // 길이 그려지는 시간에 맞춰 다음 버튼 활성화
-                setTimeout(() => {
-                    activatePerson(nextStep);
-                }, 1000);
+                drawPath(currentStep, nextStep); 
+                setTimeout(() => { activatePerson(nextStep); }, 1000);
             } else {
                 alert("🎉 4조의 모든 탐험을 마쳤습니다!");
             }
@@ -180,21 +178,17 @@
             const fromEl = document.getElementById('p' + fromIdx);
             const toEl = document.getElementById('p' + toIdx);
             const svg = document.getElementById('path-layer');
-
             const x1 = fromEl.offsetLeft + 32.5;
             const y1 = fromEl.offsetTop + 32.5;
             const x2 = toEl.offsetLeft + 32.5;
             const y2 = toEl.offsetTop + 32.5;
-
             const newLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
             const midX = (x1 + x2) / 2 + (toIdx % 2 === 0 ? 30 : -30); 
             const midY = (y1 + y2) / 2 - 50;
             const d = `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`;
-            
             newLine.setAttribute("d", d);
             newLine.setAttribute("class", "quest-line");
             svg.appendChild(newLine);
-
             setTimeout(() => { newLine.style.strokeDashoffset = "0"; }, 50);
         }
     </script>
