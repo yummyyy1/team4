@@ -50,25 +50,32 @@
         
         .modal-front, .modal-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 5px solid gold; box-shadow: 0 0 50px rgba(0,0,0,0.7); overflow: hidden; display: flex; flex-direction: column; background: #fffcf5; }
         
-        /* 앞면 스타일 수정 */
-        .modal-front-photo { width: 100%; height: 280px; background-size: cover; background-position: center; border-bottom: 5px solid gold; cursor: pointer; }
-        .modal-front h2 { margin: 15px auto 5px; color: #5d4037; font-size: 1.8rem; cursor: pointer; }
-        .click-hint { font-size: 0.85rem; color: #a0522d; margin-bottom: 10px; text-align: center; font-weight: bold; cursor: pointer; }
+        .modal-front-photo { width: 100%; height: 300px; background-size: cover; background-position: center; border-bottom: 5px solid gold; cursor: pointer; }
+        .modal-front h2 { margin: 15px auto 10px; color: #5d4037; font-size: 1.8rem; cursor: pointer; }
         
-        /* [추가] 앞면 하단 버튼 영역 */
-        .front-btn-group { display: flex; gap: 10px; justify-content: center; padding: 0 20px 15px; }
-        .btn-common { border: none; padding: 10px 0; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.2s; flex: 1; }
-        .flip-btn { background: #8b4513; color: white; }
-        .close-btn { background: #dcdcdc; color: #555; }
+        /* 앞면 버튼 그룹 수정 */
+        .front-btn-group { display: flex; gap: 10px; justify-content: center; padding: 0 20px 20px; }
+        .btn-common { border: none; padding: 10px 0; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .flip-btn { background: #8b4513; color: white; flex: 1.5; }
+        .close-btn { background: #dcdcdc; color: #555; flex: 1; }
         .close-btn:hover { background: #bbb; }
 
-        /* 뒷면 스타일 */
+        /* 뒷면 스타일 및 버튼 크기 축소 */
         .modal-back { transform: rotateY(180deg); padding: 25px 20px; text-align: center; }
         .modal-back h3 { color: #8b4513; border-bottom: 2px dashed gold; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px; }
         .info-item { display: flex; align-items: flex-start; margin: 10px 0; font-size: 0.9rem; color: #5d4037; text-align: left; }
         .info-label { font-weight: bold; color: #8b4513; width: 55px; flex-shrink: 0; }
         .info-content { flex: 1; word-break: break-all; line-height: 1.3; }
-        .next-btn { margin-top: auto; margin-bottom: 10px; background: #8b4513; color: white; width: 100%; }
+        
+        /* 뒷면 버튼: 크기를 줄이고 가운데 정렬 */
+        .next-btn { 
+            margin: auto auto 15px; 
+            background: #8b4513; 
+            color: white; 
+            width: 140px; /* 너비 축소 */
+            font-size: 0.85rem; /* 폰트 크기 축소 */
+            padding: 8px 0;
+        }
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
 
@@ -106,11 +113,10 @@
             <div class="modal-front">
                 <div id="mPhoto" class="modal-front-photo" onclick="toggleFlip()"></div>
                 <h2 id="mName" onclick="toggleFlip()">이름</h2>
-                <div class="click-hint" onclick="toggleFlip()">상세정보 보기 🔄</div>
                 
                 <div class="front-btn-group">
-                    <button class="btn-common close-btn" onclick="closeInfo()">그냥 닫기</button>
-                    <button class="btn-common flip-btn" onclick="toggleFlip()">정보 보기</button>
+                    <button class="btn-common close-btn" onclick="closeInfo()">닫기</button>
+                    <button class="btn-common flip-btn" onclick="toggleFlip()">상세정보 보기</button>
                 </div>
             </div>
 
@@ -168,7 +174,6 @@
             document.getElementById('overlay').style.display = 'block';
         }
 
-        /* 카드 뒤집기 함수 */
         function toggleFlip() {
             document.getElementById('modal-container').classList.toggle('flipped');
         }
