@@ -12,17 +12,7 @@
         .map-wrapper img { display: block; max-width: 100%; height: auto; }
         
         #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        
-        /* [수정] 쭉 그어지는 애니메이션 스타일 */
-        .quest-line { 
-            stroke: #FFD700; 
-            stroke-width: 6; 
-            stroke-dasharray: 12, 12; /* 점선 스타일 유지 */
-            fill: none; 
-            stroke-linecap: round; 
-            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
-            /* transition은 JavaScript에서 동적으로 제어합니다. */
-        }
+        .quest-line { stroke: #FFD700; stroke-width: 6; stroke-dasharray: 12, 12; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); transition: stroke-dashoffset 1.5s ease-in-out; stroke-dashoffset: 1000; }
 
         .person { 
             position: absolute; width: 65px; height: 65px; 
@@ -72,14 +62,17 @@
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; }
         .next-btn { margin-top: auto; margin-bottom: 10px; background: #8b4513; color: white; border: none; padding: 10px 0; width: 90%; align-self: center; cursor: pointer; border-radius: 25px; font-weight: bold; }
 
+        /* 시작 화면 스타일 */
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
+        /* 제목 스타일 수정: 텍스트 줄바꿈 방지 */
+        #start-screen h2 { font-size: 3rem; color: gold; white-space: nowrap; margin-bottom: 20px;}
         .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="start-screen">
-        <h2 style="font-size: 3rem; color: gold;">📜 4조 탐험 기록</h2>
+        <h2>🤖 AI공학개론 4조 탐험하기</h2>
         <button class="start-btn" onclick="startAdventure()">탐험 시작하기</button>
     </div>
 
@@ -167,8 +160,7 @@
             if (currentStep < 5) {
                 const nextStep = currentStep + 1;
                 drawPath(currentStep, nextStep); 
-                // 길 그리기 애니메이션 시간(1.5초) 후 다음 사람 활성화
-                setTimeout(() => { activatePerson(nextStep); }, 1500);
+                setTimeout(() => { activatePerson(nextStep); }, 1000);
             } else {
                 alert("🎉 모든 팀원을 만났습니다! 탐험을 완료하였습니다.");
             }
@@ -189,7 +181,6 @@
             alert("탐험을 완료하였습니다!");
         }
 
-        /* [수정] 한 번에 쭉 그어지는 애니메이션 로직 */
         function drawPath(fromIdx, toIdx, instant = false) {
             if(document.getElementById('line-'+fromIdx)) return;
             const fromEl = document.getElementById('p' + fromIdx);
@@ -199,7 +190,6 @@
             const y1 = fromEl.offsetTop + 32.5;
             const x2 = toEl.offsetLeft + 32.5;
             const y2 = toEl.offsetTop + 32.5;
-            
             const newLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
             const midX = (x1 + x2) / 2 + (toIdx % 2 === 0 ? 30 : -30); 
             const midY = (y1 + y2) / 2 - 50;
@@ -207,35 +197,12 @@
             newLine.setAttribute("d", d);
             newLine.setAttribute("class", "quest-line");
             newLine.setAttribute("id", "line-" + fromIdx);
-            
             svg.appendChild(newLine);
-
-            // [핵심] 선의 실제 길이를 계산하여 애니메이션 적용
-            const pathLength = newLine.getTotalLength();
-            
-            // 시작점: 선의 길이만큼 offset을 주어 숨김
-            newLine.style.strokeDasharray = `${pathLength} ${pathLength}`;
-            newLine.style.strokeDashoffset = pathLength;
-
             if(instant) {
-                // 즉시 완료 시 애니메이션 없이 그리기
                 newLine.style.transition = 'none';
                 newLine.style.strokeDashoffset = "0";
-                // 점선 스타일로 다시 돌려놓기 (안하면 실선으로 보임)
-                setTimeout(() => {
-                    newLine.style.strokeDasharray = "12, 12";
-                }, 10);
             } else {
-                // 부드럽게 쭉 그어지는 효과 (1.5초)
-                newLine.style.transition = 'stroke-dashoffset 1.5s ease-in-out';
-                // 트리거를 위한 requestAnimationFrame
-                requestAnimationFrame(() => {
-                    newLine.style.strokeDashoffset = "0";
-                });
-                // 애니메이션 완료 후 점선 스타일로 복귀
-                setTimeout(() => {
-                    newLine.style.strokeDasharray = "12, 12";
-                }, 1500);
+                setTimeout(() => { newLine.style.strokeDashoffset = "0"; }, 50);
             }
         }
     </script>
