@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>AI 공학개론 4조 탐험</title>
     <style>
-        /* [폰트] 손글씨 및 세리프체 */
         @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Noto+Serif+KR:wght@400;700&display=swap');
 
         body { 
@@ -21,7 +20,6 @@
         h1.main-title { font-size: 3rem; margin-bottom: 10px; color: #8B4513; }
         p.subtitle { margin-bottom: 50px; font-size: 1.2rem; color: #795548; }
 
-        /* 섹션 공통 스타일 */
         .section { 
             display: flex; 
             flex-direction: column; 
@@ -66,7 +64,7 @@
         .tm-title { font-size: 1.6rem; font-weight: bold; margin: 0; }
         .tm-desc { font-size: 1rem; color: #795548; margin: 0; }
 
-        /* [팝업] 스크랩북 스타일 (노란 네모 제거됨) */
+        /* [팝업] 스크랩북 스타일 (노란 네모 & 도장 제거 버전) */
         .modal-container { 
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             width: 380px; height: 520px; z-index: 1000; 
@@ -81,24 +79,17 @@
         
         .modal-photo-area { position: relative; width: 110px; height: 140px; margin-bottom: 25px; }
         .modal-photo { width: 100%; height: 100%; background-size: cover; background-position: center; border: 6px solid white; box-shadow: 3px 3px 10px rgba(0,0,0,0.2); }
-        /* 클립 데코 */
         .modal-photo-area::before { content: ''; position: absolute; top: -15px; left: 10px; width: 25px; height: 45px; background: url('https://upload.wikimedia.org/wikipedia/commons/e/e4/Paperclip.svg') no-repeat; background-size: contain; z-index: 2; }
-        /* 마스킹 테이프 */
         .modal-photo-area::after { content: ''; position: absolute; top: -10px; right: -25px; width: 70px; height: 25px; background: rgba(218, 165, 32, 0.5); transform: rotate(15deg); z-index: 1; }
 
         .info-item { display: flex; margin-bottom: 8px; font-size: 0.95rem; }
         .info-label { font-family: 'Nanum Pen Script', cursive; font-size: 1.5rem; color: #a0522d; width: 70px; flex-shrink: 0; }
         .info-content { margin-top: 5px; }
 
-        .modal-deco { position: absolute; bottom: 80px; right: 30px; text-align: right; }
-        .stamp { width: 70px; height: 70px; border: 3px solid #795548; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #795548; font-weight: bold; font-size: 0.7rem; transform: rotate(-15deg); font-family: 'Nanum Pen Script', cursive; opacity: 0.6; }
-
         .close-btn { margin-top: auto; background: #5d4037; color: #fff; border: none; padding: 12px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .close-btn:hover { background: #3e2723; }
 
-        /* 티처블 전용 심플 모달 */
         #tm-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; border: 3px solid #DAA520; z-index: 1001; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
-
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 900; }
     </style>
 </head>
@@ -121,9 +112,9 @@
             <svg id="path-layer"></svg>
             <div id="p1" class="person" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');" onclick="clickPerson(1)"></div>
             <div id="p2" class="person" style="background-image: url('49542EE6-31E8-431D-8DE3-686F737E7B87.png');" onclick="clickPerson(2)"></div>
-            <div id="p3" class="person" style="background-image: url('IMG_3331.jpeg');" onclick="clickPerson(3)"></div>
+            <div id="p3" class="person" style="background-image: url('34C035BD-EDD2-41AF-84E3-0728A1B3E731.jpeg');" onclick="clickPerson(3)"></div>
             <div id="p4" class="person" style="background-image: url('IMG_3333.jpeg');" onclick="clickPerson(4)"></div>
-            <div id="p5" class="person" style="background-image: url('IMG_3334.jpeg');" onclick="clickPerson(5)"></div>
+            <div id="p5" class="person" style="background-image: url('7F96CA81-2C2D-4467-8A53-3DA33B468644.jpeg');" onclick="clickPerson(5)"></div>
         </div>
     </div>
 
@@ -145,7 +136,6 @@
                 <div class="info-item"><span class="info-label">소개</span> <span id="mIntro" class="info-content"></span></div>
                 <div class="info-item"><span class="info-label">메일</span> <span id="mEmail" class="info-content"></span></div>
             </div>
-            <div class="modal-deco"><div class="stamp">EXPLORER<br>REPORT</div></div>
             <button class="close-btn" onclick="closeInfo()">탐험 계속하기</button>
         </div>
     </div>
@@ -166,9 +156,10 @@
         const teamData = {
             1: { name: '이지민', mbti: 'ESFJ', intro: '끊임없이 도전하며 성장하는 실행가', email: 'jimin0801@hufs.ac.kr', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
             2: { name: '조연선', mbti: 'ISTP', intro: '누워있는게 제일 행복한 사람', email: 'cje7994@hufs.ac.kr', photo: "url('49542EE6-31E8-431D-8DE3-686F737E7B87.png')" },
-            3: { name: '최현민', mbti: 'INFP', intro: '내적 신념이 깊은 열정적인 중재자', email: 'choihyunmin1003@hufs.ac.kr', photo: "url('IMG_3331.jpeg')" },
+            // [수정] 최현민 님 팝업 데이터 사진 파일명 변경
+            3: { name: '최현민', mbti: 'INFP', intro: '내적 신념이 깊은 열정적인 중재자', email: 'choihyunmin1003@hufs.ac.kr', photo: "url('34C035BD-EDD2-41AF-84E3-0728A1B3E731.jpeg')" },
             4: { name: '김서영', mbti: 'INFJ', intro: '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', email: '202602719@hufs.ac.kr', photo: "url('IMG_3333.jpeg')" },
-            5: { name: '임정규', mbti: 'ISFJ', intro: '일을 열심히 꾸준히 노력하는 대기만성형', email: 'junggyu3798@hufs.ac.kr', photo: "url('IMG_3334.jpeg')" }
+            5: { name: '임정규', mbti: 'ISFJ', intro: '일을 열심히 꾸준히 노력하는 대기만성형', email: 'junggyu3798@hufs.ac.kr', photo: "url('7F96CA81-2C2D-4467-8A53-3DA33B468644.jpeg')" }
         };
 
         window.onload = () => { 
