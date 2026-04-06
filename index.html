@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <title>4조 탐험 지도</title>
     <style>
-        body { background-color: #f4e4bc; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; overflow-x: hidden; }
+        body { background-color: #f4e4bc; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; overflow-x: auto; }
         h1 { color: #5d4037; text-shadow: 1px 1px 2px white; z-index: 1; margin-bottom: 0;}
         p.subtitle { margin-top: 5px; color: #7f5539; font-size: 1.1rem; font-weight: bold; }
         
         /* 지도 컨테이너 */
-        .map-wrapper { position: relative; border: 12px solid #8b4513; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #eee; display: inline-block; }
+        .map-wrapper { position: relative; border: 12px solid #8b4513; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #eee; display: inline-block; margin-bottom: 30px; }
         .map-wrapper img { display: block; max-width: 100%; height: auto; }
         
         /* SVG 경로 레이어 */
         #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        .quest-line { stroke: #FFD700; stroke-width: 6; stroke-dasharray: 12, 12; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); transition: stroke-dashoffset 1.5s linear; stroke-dashoffset: 1000; }
+        .quest-line { stroke: #FFD700; stroke-width: 6; stroke-dasharray: 12, 12; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); transition: stroke-dashoffset 1.5s linear; }
 
-        /* 지도 위 버튼 */
+        /* 인물 마커 */
         .person { 
             position: absolute; width: 65px; height: 65px; 
             cursor: pointer; z-index: 10; border-radius: 50%;
@@ -29,72 +29,67 @@
         .person.locked { pointer-events: none; }
         .person.active:hover { transform: scale(1.8) rotate(5deg); z-index: 20; border-color: gold; }
 
-        /* 버튼 위치 */
         #p1 { top: 32%; left: 18%; }
         #p2 { top: 49%; left: 30%; }
         #p3 { top: 55%; left: 58%; }
         #p4 { top: 48%; left: 88%; }
         #p5 { top: 25%; left: 80%; }
 
-        /* 완료하기 버튼 */
-        .finish-btn {
-            position: absolute; bottom: 20px; right: 20px;
-            padding: 10px 20px; background: #5d4037; color: white;
-            border: 2px solid gold; border-radius: 10px; cursor: pointer;
-            font-weight: bold; z-index: 30; transition: 0.3s;
-        }
-        .finish-btn:hover { background: #8b4513; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-
-        /* [핵심] 탐험 완료 단체사진 팝업 스타일 */
-        #finish-modal {
-            display: none; /* 평소엔 숨김 */
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 450px; /* 사진 크기에 맞춰 넉넉하게 */
-            background: #fffcf5;
-            border: 8px solid gold;
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            z-index: 300; /* 가장 위에 띄움 */
-            text-align: center;
-            overflow: hidden;
-            animation: popIn 0.5s ease; /* 팝업 등장 애니메이션 */
-        }
-        @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-
-        /* 단체 사진 */
-        #finish-modal img.group-photo {
-            width: 100%;
-            height: auto;
-            border-bottom: 5px solid gold;
-        }
-        /* 완료 메시지 */
-        #finish-modal h2 {
-            margin: 20px 0;
-            color: #5d4037;
-            font-size: 1.8rem;
-        }
-        /* 확인 버튼 */
-        #finish-modal .final-btn {
-            background: #8b4513;
+        /* [추가] 지도 아래 티처블 머신 버튼 */
+        .tm-open-btn {
+            padding: 15px 30px;
+            background: #4285f4;
             color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 30px;
+            border: 4px solid #fff;
+            border-radius: 50px;
+            font-size: 1.2rem;
             font-weight: bold;
-            font-size: 1.1rem;
             cursor: pointer;
-            margin-bottom: 25px;
-            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            margin-top: 10px;
         }
-        #finish-modal .final-btn:hover { background: gold; color: #5d4037; }
+        .tm-open-btn:hover { background: #3367d6; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+
+        /* 공통 모달 스타일 */
+        .modal-base {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background: #fffcf5;
+            border: 6px solid gold; border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8); z-index: 300;
+            text-align: center; overflow: hidden; animation: popIn 0.4s ease;
+        }
+        @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+
+        /* [추가] 티처블 머신 팝업 전용 */
+        #tm-modal { width: 380px; padding: 30px 20px; }
+        #tm-modal h2 { color: #4285f4; margin-top: 0; }
+        #tm-modal p { color: #5d4037; line-height: 1.6; font-size: 1rem; word-break: keep-all; margin-bottom: 25px; }
+
+        /* 인물 정보 모달 (기존 스타일 유지 및 수정) */
+        .modal-container { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 460px; perspective: 1000px; z-index: 100; }
+        .modal-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; }
+        .modal-container.flipped .modal-inner { transform: rotateY(180deg); }
+        .modal-front, .modal-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 5px solid gold; box-shadow: 0 0 50px rgba(0,0,0,0.7); overflow: hidden; display: flex; flex-direction: column; background: #fffcf5; }
+        .modal-front-photo { width: 100%; height: 300px; background-size: cover; background-position: center; border-bottom: 5px solid gold; cursor: pointer; }
+        .modal-front h2 { margin: 15px auto 10px; color: #5d4037; font-size: 1.8rem; cursor: pointer; }
+        .front-btn-group { display: flex; gap: 10px; justify-content: center; padding: 0 20px 20px; }
+        
+        .btn-common { border: none; padding: 10px 0; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .blue-btn { background: #4285f4; color: white; padding: 12px 30px; }
+        .brown-btn { background: #8b4513; color: white; }
+        .grey-btn { background: #dcdcdc; color: #555; }
+        .next-btn { margin: auto auto 15px; width: 140px; font-size: 0.85rem; padding: 8px 0; }
+
+        /* 탐험 완료 단체사진 팝업 */
+        #finish-modal { width: 450px; }
+        #finish-modal img.group-photo { width: 100%; height: auto; border-bottom: 5px solid gold; }
 
         /* 배경 어둡게 */
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 99; }
 
         /* 시작 화면 */
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
-        #start-screen h2 { font-size: 2.5rem; color: gold; white-space: nowrap; margin-bottom: 20px;}
         .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; }
     </style>
 </head>
@@ -118,26 +113,64 @@
         <div id="p4" class="person locked" style="background-image: url('IMG_3333.jpeg');" onclick="clickPerson(4)"></div>
         <div id="p5" class="person locked" style="background-image: url('IMG_3334.jpeg');" onclick="clickPerson(5)"></div>
 
-        <button class="finish-btn" onclick="finishAll()">탐험 완료하기</button>
+        <button class="btn-common brown-btn" style="position: absolute; bottom: 20px; right: 20px; padding: 10px 20px; border: 2px solid gold;" onclick="finishAll()">탐험 완료하기</button>
     </div>
 
-    <div id="finish-modal">
-        <img src="9176C6C6-4ECE-4CE4-82BF-6A7402467888.png" alt="4조 단체사진" class="group-photo">
+    <button class="tm-open-btn" onclick="openTM()">우리 조가 만든 Teachable Machine</button>
+
+    <div id="tm-modal" class="modal-base">
+        <h2>🧠 모델 소개</h2>
+        <p>저희 조는 일상 속에서 쉽게 지나칠 수 있는 ‘졸음’을 객관적으로 분석해보고자, 표정과 눈 등의 시각적 데이터를 기반으로 한 티처블 머신 모델을 만들었습니다.</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn-common grey-btn" style="width: 100px;" onclick="closeTM()">닫기</button>
+            <button class="btn-common blue-btn" onclick="window.open('https://teachablemachine.withgoogle.com/models/azRfV6OJy/', '_blank')">보러가기</button>
+        </div>
+    </div>
+
+    <div id="modal-container" class="modal-container">
+        <div class="modal-inner">
+            <div class="modal-front">
+                <div id="mPhoto" class="modal-front-photo" onclick="toggleFlip()"></div>
+                <h2 id="mName" onclick="toggleFlip()">이름</h2>
+                <div class="front-btn-group">
+                    <button class="btn-common grey-btn" style="flex:1" onclick="closeInfo()">닫기</button>
+                    <button class="btn-common brown-btn" style="flex:1.5" onclick="toggleFlip()">상세정보 보기</button>
+                </div>
+            </div>
+            <div class="modal-back">
+                <h3 id="mNameBack">이름</h3>
+                <div class="info-item"><span class="info-label">학교</span><span class="info-content">한국외국어대학교</span></div>
+                <div class="info-item"><span class="info-label">학과</span><span class="info-content">바이오메디컬공학부</span></div>
+                <div class="info-item"><span class="info-label">MBTI</span><span id="mMbti" class="info-content"></span></div>
+                <div class="info-item"><span class="info-label">소개</span><span id="mIntro" class="info-content"></span></div>
+                <div class="info-item"><span class="info-label">연락처</span><span id="mPhone" class="info-content"></span></div>
+                <div class="info-item"><span class="info-label">메일</span><span id="mEmail" class="info-content"></span></div>
+                <button class="btn-common brown-btn next-btn" onclick="closeInfo()">탐험 계속하기</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="finish-modal" class="modal-base">
+        <img src="9176C6C6-4ECE-4CE4-82BF-6A7402467888.png" alt="단체사진" class="group-photo">
         <h2>🎉 탐험 완료! 수고하셨습니다.</h2>
-        <button class="final-btn" onclick="closeGroupModal()">지도보기</button>
+        <button class="btn-common brown-btn" style="margin-bottom:20px; padding: 10px 30px;" onclick="closeGroupModal()">지도보기</button>
     </div>
 
     <div id="overlay"></div>
 
     <script>
         let currentStep = 0;
+        const teamData = {
+            1: { name: '이지민', mbti: 'ESFJ', intro: '끊임없이 도전하며 성장하는 실행가', phone: '010-6312-6561', email: 'jimin0801@hufs.ac.kr', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
+            2: { name: '조연선', mbti: 'ISTP', intro: '누워있는게 제일 행복한 사람', phone: '010-2105-4280', email: 'cje7994@hufs.ac.kr', photo: "url('IMG_3332.jpeg')" },
+            3: { name: '최현민', mbti: 'INFP', intro: '내적 신념이 깊은 열정적인 중재자', phone: '010-4127-1879', email: 'choihyunmin1003@hufs.ac.kr', photo: "url('IMG_3331.jpeg')" },
+            4: { name: '김서영', mbti: 'INFJ', intro: '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', phone: '010-7635-1312', email: '202602719@hufs.ac.kr', photo: "url('IMG_3333.jpeg')" },
+            5: { name: '임정규', mbti: 'ISFJ', intro: '일을 열심히 꾸준히 노력하는 대기만성형', phone: '010-3590-3798', email: 'junggyu3798@hufs.ac.kr', photo: "url('IMG_3334.jpeg')" }
+        };
 
         function startAdventure() {
             document.getElementById('start-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('start-screen').style.display = 'none';
-                activatePerson(1);
-            }, 500);
+            setTimeout(() => { document.getElementById('start-screen').style.display = 'none'; activatePerson(1); }, 500);
         }
 
         function activatePerson(step) {
@@ -149,68 +182,66 @@
 
         function clickPerson(step) {
             if (step !== currentStep && !document.getElementById('p'+step).classList.contains('active')) return;
-            // (개별 정보 팝업 로직은 기존 코드 그대로 유지해주세요)
-            // 여기선 예시로 개별 팝업 대신 완료 확인만 가능하게 함
-            activatePerson(step + 1); // 클릭 시 다음 사람 활성화
-        }
-
-        // [수정] 완료 로직 - 단체사진 팝업 띄우기
-        function finishAll() {
-            for(let i=1; i<5; i++) {
-                if(!document.getElementById('line-'+i)) {
-                    drawPath(i, i+1, true); 
-                }
-            }
-            for(let i=1; i<=5; i++) {
-                const p = document.getElementById('p' + i);
-                p.classList.remove('locked');
-                p.classList.add('active');
-            }
-            currentStep = 5;
-
-            // 핵심: 알림창 대신 팝업창 띄우기
-            document.getElementById('finish-modal').style.display = 'block';
+            const data = teamData[step];
+            document.getElementById('mName').innerText = data.name;
+            document.getElementById('mNameBack').innerText = data.name;
+            document.getElementById('mPhoto').style.backgroundImage = data.photo;
+            document.getElementById('mMbti').innerText = data.mbti;
+            document.getElementById('mIntro').innerText = data.intro;
+            document.getElementById('mPhone').innerText = data.phone;
+            document.getElementById('mEmail').innerText = data.email;
+            document.getElementById('modal-container').classList.remove('flipped');
+            document.getElementById('modal-container').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
-        // 단체사진 팝업 닫기
-        function closeGroupModal() {
-            document.getElementById('finish-modal').style.display = 'none';
+        function toggleFlip() { document.getElementById('modal-container').classList.toggle('flipped'); }
+        function closeInfo() { 
+            document.getElementById('modal-container').style.display = 'none'; 
+            document.getElementById('overlay').style.display = 'none';
+            if (currentStep < 5) { 
+                const nextStep = currentStep + 1; 
+                drawPath(currentStep, nextStep); 
+                setTimeout(() => { activatePerson(nextStep); }, 1500);
+            }
+        }
+
+        /* 티처블 머신 모달 제어 */
+        function openTM() {
+            document.getElementById('tm-modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        function closeTM() {
+            document.getElementById('tm-modal').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
+
+        function finishAll() {
+            for(let i=1; i<5; i++) { if(!document.getElementById('line-'+i)) drawPath(i, i+1, true); }
+            for(let i=1; i<=5; i++) { const p = document.getElementById('p' + i); p.classList.remove('locked'); p.classList.add('active'); }
+            document.getElementById('finish-modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        function closeGroupModal() { document.getElementById('finish-modal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
 
         function drawPath(fromIdx, toIdx, instant = false) {
             if(document.getElementById('line-'+fromIdx)) return;
             const fromEl = document.getElementById('p' + fromIdx);
             const toEl = document.getElementById('p' + toIdx);
             const svg = document.getElementById('path-layer');
-            const x1 = fromEl.offsetLeft + 32.5;
-            const y1 = fromEl.offsetTop + 32.5;
-            const x2 = toEl.offsetLeft + 32.5;
-            const y2 = toEl.offsetTop + 32.5;
-            
+            const x1 = fromEl.offsetLeft + 32.5; const y1 = fromEl.offsetTop + 32.5;
+            const x2 = toEl.offsetLeft + 32.5; const y2 = toEl.offsetTop + 32.5;
             const newLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            const midX = (x1 + x2) / 2 + (toIdx % 2 === 0 ? 30 : -30); 
-            const midY = (y1 + y2) / 2 - 50;
-            const d = `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`;
-            
-            newLine.setAttribute("d", d);
+            const midX = (x1 + x2) / 2 + (toIdx % 2 === 0 ? 30 : -30); const midY = (y1 + y2) / 2 - 50;
+            newLine.setAttribute("d", `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`);
             newLine.setAttribute("class", "quest-line");
             newLine.setAttribute("id", "line-" + fromIdx);
-            
             svg.appendChild(newLine);
-
             const totalLen = newLine.getTotalLength();
+            newLine.style.strokeDasharray = "12, 12";
             newLine.style.strokeDashoffset = totalLen;
-
-            if(instant) {
-                newLine.style.transition = 'none';
-                newLine.style.strokeDashoffset = "0";
-            } else {
-                requestAnimationFrame(() => {
-                    newLine.style.strokeDashoffset = "0";
-                });
-            }
+            if(instant) { newLine.style.transition = 'none'; newLine.style.strokeDashoffset = "0"; } 
+            else { requestAnimationFrame(() => { newLine.style.strokeDashoffset = "0"; }); }
         }
     </script>
 </body>
