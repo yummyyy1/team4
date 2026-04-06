@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>AI 공학개론 4조 탐험</title>
     <style>
+        /* [폰트] 손글씨 및 세리프체 */
         @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Noto+Serif+KR:wght@400;700&display=swap');
 
         body { 
@@ -65,7 +66,7 @@
         .tm-title { font-size: 1.6rem; font-weight: bold; margin: 0; }
         .tm-desc { font-size: 1rem; color: #795548; margin: 0; }
 
-        /* [팝업] 스크랩북 스타일 (도장 제거됨) */
+        /* [팝업] 스크랩북 스타일 (노란 네모 제거됨) */
         .modal-container { 
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             width: 380px; height: 520px; z-index: 1000; 
@@ -80,21 +81,24 @@
         
         .modal-photo-area { position: relative; width: 110px; height: 140px; margin-bottom: 25px; }
         .modal-photo { width: 100%; height: 100%; background-size: cover; background-position: center; border: 6px solid white; box-shadow: 3px 3px 10px rgba(0,0,0,0.2); }
+        /* 클립 데코 */
         .modal-photo-area::before { content: ''; position: absolute; top: -15px; left: 10px; width: 25px; height: 45px; background: url('https://upload.wikimedia.org/wikipedia/commons/e/e4/Paperclip.svg') no-repeat; background-size: contain; z-index: 2; }
+        /* 마스킹 테이프 */
         .modal-photo-area::after { content: ''; position: absolute; top: -10px; right: -25px; width: 70px; height: 25px; background: rgba(218, 165, 32, 0.5); transform: rotate(15deg); z-index: 1; }
 
         .info-item { display: flex; margin-bottom: 8px; font-size: 0.95rem; }
         .info-label { font-family: 'Nanum Pen Script', cursive; font-size: 1.5rem; color: #a0522d; width: 70px; flex-shrink: 0; }
         .info-content { margin-top: 5px; }
 
-        /* 데코: 컬러칩만 유지 */
-        .modal-deco { position: absolute; bottom: 80px; right: 30px; display: flex; flex-direction: column; align-items: flex-end; }
-        .color-chip { width: 35px; height: 45px; background: #FFD700; border: 2px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); border-radius: 2px; }
+        .modal-deco { position: absolute; bottom: 80px; right: 30px; text-align: right; }
+        .stamp { width: 70px; height: 70px; border: 3px solid #795548; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #795548; font-weight: bold; font-size: 0.7rem; transform: rotate(-15deg); font-family: 'Nanum Pen Script', cursive; opacity: 0.6; }
 
         .close-btn { margin-top: auto; background: #5d4037; color: #fff; border: none; padding: 12px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .close-btn:hover { background: #3e2723; }
 
+        /* 티처블 전용 심플 모달 */
         #tm-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; border: 3px solid #DAA520; z-index: 1001; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 900; }
     </style>
 </head>
@@ -141,7 +145,7 @@
                 <div class="info-item"><span class="info-label">소개</span> <span id="mIntro" class="info-content"></span></div>
                 <div class="info-item"><span class="info-label">메일</span> <span id="mEmail" class="info-content"></span></div>
             </div>
-            <div class="modal-deco"><div class="color-chip"></div></div>
+            <div class="modal-deco"><div class="stamp">EXPLORER<br>REPORT</div></div>
             <button class="close-btn" onclick="closeInfo()">탐험 계속하기</button>
         </div>
     </div>
