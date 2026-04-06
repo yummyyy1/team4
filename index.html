@@ -2,26 +2,32 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>4조 탐험 지도</title>
+    <title>AI 공학개론 4조</title>
     <style>
-        body { background-color: #f4e4bc; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; overflow-x: auto; }
-        h1 { color: #5d4037; text-shadow: 1px 1px 2px white; z-index: 1; margin-bottom: 0;}
-        p.subtitle { margin-top: 5px; color: #7f5539; font-size: 1.1rem; font-weight: bold; }
+        /* [스케치] 전체적인 배경색과 폰트 설정 */
+        body { background-color: #ffffff; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 40px; overflow-x: auto; color: #000; }
         
-        .map-wrapper { position: relative; border: 12px solid #8b4513; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #eee; display: inline-block; margin-bottom: 30px; }
-        .map-wrapper img { display: block; max-width: 100%; height: auto; }
+        /* [스케치] 제목 스타일: 검은색, 중앙 정렬 */
+        h1.main-title { font-size: 3rem; margin-bottom: 50px; }
         
+        /* 세션 스타일: 중앙 정렬 */
+        .section { display: flex; flex-direction: column; align-items: center; margin-bottom: 70px; max-width: 800px; width: 100%; }
+        h3.section-label { font-size: 1.5rem; color: #555; align-self: flex-start; margin-left: 10px; margin-bottom: 10px; }
+
+        /* [단체사진] 컨테이너 스타일: 검은색 테두리, 그림자 */
+        .sketch-box { border: 4px solid #000; border-radius: 15px; box-shadow: 10px 10px 0px rgba(0,0,0,0.1); overflow: hidden; background: #fff; display: block; width: 100%; text-align: center; }
+        . Sketch-box img.group-photo { width: 100%; height: auto; display: block; }
+        
+        /* [지도] 컨테이너 스타일: 기존 스타일에서 배경만 흰색으로 변경 */
+        .map-wrapper { position: relative; border: 12px solid #8b4513; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #fff; display: inline-block; }
+        .map-wrapper img.map-bg { display: block; max-width: 100%; height: auto; }
+        
+        /* SVG 경로 레이어 */
         #path-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         .quest-line { stroke: #FFD700; stroke-width: 6; stroke-dasharray: 12, 12; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9)); transition: stroke-dashoffset 1.5s linear; }
 
-        .person { 
-            position: absolute; width: 65px; height: 65px; 
-            cursor: pointer; z-index: 10; border-radius: 50%;
-            border: 3px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            background-size: cover; background-position: center;
-            transition: transform 0.3s ease, filter 0.3s, opacity 0.3s;
-            filter: grayscale(80%); opacity: 0.8;
-        }
+        /* 인물 마커 */
+        .person { position: absolute; width: 65px; height: 65px; cursor: pointer; z-index: 10; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.5); background-size: cover; background-position: center; transition: transform 0.3s ease, filter 0.3s, opacity 0.3s; filter: grayscale(80%); opacity: 0.8; }
         .person.active { filter: grayscale(0%); opacity: 1; pointer-events: auto; }
         .person.locked { pointer-events: none; }
         .person.active:hover { transform: scale(1.8) rotate(5deg); z-index: 20; border-color: gold; }
@@ -32,16 +38,15 @@
         #p4 { top: 48%; left: 88%; }
         #p5 { top: 25%; left: 80%; }
 
-        .tm-open-btn { padding: 15px 30px; background: #4285f4; color: white; border: 4px solid #fff; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s; margin-top: 10px; }
-        .tm-open-btn:hover { background: #3367d6; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        /* [티처블머신] 버튼 스타일 */
+        .sketch-btn { padding: 20px 40px; background: #fff; color: #000; border: 4px solid #000; border-radius: 50px; font-size: 1.3rem; font-weight: bold; cursor: pointer; box-shadow: 10px 10px 0px rgba(0,0,0,0.1); transition: 0.3s; word-break: keep-all; }
+        .sketch-btn:hover { background: #eee; transform: translate(3px, 3px); box-shadow: 7px 7px 0px rgba(0,0,0,0.1); }
 
+        /* 모달 공통 스타일 */
         .modal-base { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fffcf5; border: 6px solid gold; border-radius: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.8); z-index: 300; text-align: center; overflow: hidden; animation: popIn 0.4s ease; }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 
-        #tm-modal { width: 380px; padding: 30px 20px; }
-        #tm-modal h2 { color: #4285f4; margin-top: 0; }
-        #tm-modal p { color: #5d4037; line-height: 1.6; font-size: 1rem; word-break: keep-all; margin-bottom: 25px; }
-
+        /* 인물 정보 모달 */
         .modal-container { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 460px; perspective: 1000px; z-index: 100; }
         .modal-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; }
         .modal-container.flipped .modal-inner { transform: rotateY(180deg); }
@@ -50,51 +55,57 @@
         .modal-front h2 { margin: 15px auto 10px; color: #5d4037; font-size: 1.8rem; cursor: pointer; }
         .front-btn-group { display: flex; gap: 10px; justify-content: center; padding: 0 20px 20px; }
         
-        .btn-common { border: none; padding: 10px 0; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-modal { border: none; padding: 10px 0; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .blue-btn { background: #4285f4; color: white; padding: 12px 30px; }
         .brown-btn { background: #8b4513; color: white; }
         .grey-btn { background: #dcdcdc; color: #555; }
         .next-btn { margin: auto auto 15px; width: 140px; font-size: 0.85rem; padding: 8px 0; }
 
-        #finish-modal { width: 450px; }
-        #finish-modal img.group-photo { width: 100%; height: auto; border-bottom: 5px solid gold; }
+        /* 티처블 머신 팝업 */
+        #tm-modal { width: 380px; padding: 30px 20px; }
+        #tm-modal h2 { color: #4285f4; margin-top: 0; }
+        #tm-modal p { color: #5d4037; line-height: 1.6; font-size: 1rem; word-break: keep-all; margin-bottom: 25px; }
 
+        /* 오버레이 */
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 99; }
-        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; transition: 0.5s; }
-        .start-btn { padding: 15px 40px; font-size: 1.5rem; background: #8b4513; color: white; border: 3px solid gold; border-radius: 50px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="start-screen">
-        <h2>🤖 AI공학개론 4조 탐험하기</h2>
-        <button class="start-btn" onclick="startAdventure()">탐험 시작하기</button>
+    <h1 class="main-title">AI 공학개론 4조</h1>
+
+    <div class="section">
+        <h3 class="section-label">우리 조를 소개합니다!</h3>
+        <div class="sketch-box">
+            <img src="9176C6C6-4ECE-4CE4-82BF-6A7402467888.png" alt="4조 단체사진" class="group-photo">
+        </div>
     </div>
 
-    <h1>🗺️ 4조 탐험 지도</h1>
-    <p class="subtitle">팀원을 클릭하여 탐험해보세요!</p>
-
-    <div class="map-wrapper">
-        <img src="85E5E5D9-C0CF-44FB-BA94-082BD6E083EB.png" alt="팀 지도">
-        <svg id="path-layer" width="100%" height="100%"></svg>
-        
-        <div id="p1" class="person locked" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');" onclick="clickPerson(1)"></div>
-        <div id="p2" class="person locked" style="background-image: url('49542EE6-31E8-431D-8DE3-686F737E7B87.png');" onclick="clickPerson(2)"></div>
-        <div id="p3" class="person locked" style="background-image: url('IMG_3331.jpeg');" onclick="clickPerson(3)"></div>
-        <div id="p4" class="person locked" style="background-image: url('IMG_3333.jpeg');" onclick="clickPerson(4)"></div>
-        <div id="p5" class="person locked" style="background-image: url('IMG_3334.jpeg');" onclick="clickPerson(5)"></div>
-
-        <button class="btn-common brown-btn" style="position: absolute; bottom: 20px; right: 20px; padding: 10px 20px; border: 2px solid gold;" onclick="finishAll()">탐험 완료하기</button>
+    <div class="section">
+        <h3 class="section-label">조원 탐험하기</h3>
+        <div class="map-wrapper">
+            <img src="85E5E5D9-C0CF-44FB-BA94-082BD6E083EB.png" alt="팀 지도" class="map-bg">
+            <svg id="path-layer" width="100%" height="100%"></svg>
+            
+            <div id="p1" class="person locked" style="background-image: url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png');" onclick="clickPerson(1)"></div>
+            <div id="p2" class="person locked" style="background-image: url('49542EE6-31E8-431D-8DE3-686F737E7B87.png');" onclick="clickPerson(2)"></div>
+            <div id="p3" class="person locked" style="background-image: url('IMG_3331.jpeg');" onclick="clickPerson(3)"></div>
+            <div id="p4" class="person locked" style="background-image: url('IMG_3333.jpeg');" onclick="clickPerson(4)"></div>
+            <div id="p5" class="person locked" style="background-image: url('IMG_3334.jpeg');" onclick="clickPerson(5)"></div>
+        </div>
     </div>
 
-    <button class="tm-open-btn" onclick="openTM()">우리 조가 만든 Teachable Machine</button>
+    <div class="section">
+        <h3 class="section-label">우리가 만든 Teachable Machine</h3>
+        <button class="sketch-btn" onclick="openTM()">소개 보러가기</button>
+    </div>
 
     <div id="tm-modal" class="modal-base">
         <h2>🧠 모델 소개</h2>
         <p>저희 조는 일상 속에서 쉽게 지나칠 수 있는 ‘졸음’을 객관적으로 분석해보고자, 표정과 눈 등의 시각적 데이터를 기반으로 한 티처블 머신 모델을 만들었습니다.</p>
         <div style="display: flex; gap: 10px; justify-content: center;">
-            <button class="btn-common grey-btn" style="width: 100px;" onclick="closeTM()">닫기</button>
-            <button class="btn-common blue-btn" onclick="window.open('https://teachablemachine.withgoogle.com/models/azRfV6OJy/', '_blank')">보러가기</button>
+            <button class="btn-modal grey-btn" style="width: 100px;" onclick="closeTM()">닫기</button>
+            <button class="btn-modal blue-btn" onclick="window.open('https://teachablemachine.withgoogle.com/models/azRfV6OJy/', '_blank')">모델 실행하기</button>
         </div>
     </div>
 
@@ -104,8 +115,8 @@
                 <div id="mPhoto" class="modal-front-photo" onclick="toggleFlip()"></div>
                 <h2 id="mName" onclick="toggleFlip()">이름</h2>
                 <div class="front-btn-group">
-                    <button class="btn-common grey-btn" style="flex:1" onclick="closeInfo()">닫기</button>
-                    <button class="btn-common brown-btn" style="flex:1.5" onclick="toggleFlip()">상세정보 보기</button>
+                    <button class="btn-modal grey-btn" style="flex:1" onclick="closeInfo()">닫기</button>
+                    <button class="btn-modal brown-btn" style="flex:1.5" onclick="toggleFlip()">상세정보 보기</button>
                 </div>
             </div>
             <div class="modal-back">
@@ -116,44 +127,37 @@
                 <div class="info-item"><span class="info-label">소개</span><span id="mIntro" class="info-content"></span></div>
                 <div class="info-item"><span class="info-label">연락처</span><span id="mPhone" class="info-content"></span></div>
                 <div class="info-item"><span class="info-label">메일</span><span id="mEmail" class="info-content"></span></div>
-                <button class="btn-common brown-btn next-btn" onclick="closeInfo()">탐험 계속하기</button>
+                <button class="btn-modal brown-btn next-btn" onclick="closeInfo()">탐험 계속하기</button>
             </div>
         </div>
-    </div>
-
-    <div id="finish-modal" class="modal-base">
-        <img src="9176C6C6-4ECE-4CE4-82BF-6A7402467888.png" alt="단체사진" class="group-photo">
-        <h2>🎉 탐험 완료! 수고하셨습니다.</h2>
-        <button class="btn-common brown-btn" style="margin-bottom:20px; padding: 10px 30px;" onclick="closeGroupModal()">지도보기</button>
     </div>
 
     <div id="overlay"></div>
 
     <script>
-        let currentStep = 0;
+        // 기존 스크립트 로직 유지 (필요에 따라 사진 활성화 로직 추가)
+        let currentStep = 1; // 1번 이지민부터 활성화
         const teamData = {
             1: { name: '이지민', mbti: 'ESFJ', intro: '끊임없이 도전하며 성장하는 실행가', phone: '010-6312-6561', email: 'jimin0801@hufs.ac.kr', photo: "url('CFF4EA87-BC95-42C1-8E9C-12C0C6D76BA0.png')" },
-            // 조연선(2) 이미지 경로 업데이트됨
             2: { name: '조연선', mbti: 'ISTP', intro: '누워있는게 제일 행복한 사람', phone: '010-2105-4280', email: 'cje7994@hufs.ac.kr', photo: "url('49542EE6-31E8-431D-8DE3-686F737E7B87.png')" },
             3: { name: '최현민', mbti: 'INFP', intro: '내적 신념이 깊은 열정적인 중재자', phone: '010-4127-1879', email: 'choihyunmin1003@hufs.ac.kr', photo: "url('IMG_3331.jpeg')" },
             4: { name: '김서영', mbti: 'INFJ', intro: '묵묵히 제 몫을 다하는 바위처럼 듬직한 존재', phone: '010-7635-1312', email: '202602719@hufs.ac.kr', photo: "url('IMG_3333.jpeg')" },
             5: { name: '임정규', mbti: 'ISFJ', intro: '일을 열심히 꾸준히 노력하는 대기만성형', phone: '010-3590-3798', email: 'junggyu3798@hufs.ac.kr', photo: "url('IMG_3334.jpeg')" }
         };
 
-        function startAdventure() {
-            document.getElementById('start-screen').style.opacity = '0';
-            setTimeout(() => { document.getElementById('start-screen').style.display = 'none'; activatePerson(1); }, 500);
-        }
+        // 초기화: 첫 번째 인물 활성화
+        function init() { activatePerson(currentStep); }
+        window.onload = init;
 
         function activatePerson(step) {
-            currentStep = step;
+            if (step > 5) return;
             const target = document.getElementById('p' + step);
             target.classList.remove('locked');
             target.classList.add('active');
         }
 
         function clickPerson(step) {
-            if (step !== currentStep && !document.getElementById('p'+step).classList.contains('active')) return;
+            if (step !== currentStep) return; // 활성화된 단계만 클릭 가능
             const data = teamData[step];
             document.getElementById('mName').innerText = data.name;
             document.getElementById('mNameBack').innerText = data.name;
@@ -171,23 +175,17 @@
         function closeInfo() { 
             document.getElementById('modal-container').style.display = 'none'; 
             document.getElementById('overlay').style.display = 'none';
+            // 팝업 닫을 때 다음 사람 활성화 및 길 그리기
             if (currentStep < 5) { 
                 const nextStep = currentStep + 1; 
                 drawPath(currentStep, nextStep); 
-                setTimeout(() => { activatePerson(nextStep); }, 1500);
+                currentStep = nextStep; // 단계 업데이트
+                setTimeout(() => { activatePerson(currentStep); }, 1500); // 애니메이션 후 활성화
             }
         }
 
         function openTM() { document.getElementById('tm-modal').style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
         function closeTM() { document.getElementById('tm-modal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
-
-        function finishAll() {
-            for(let i=1; i<5; i++) { if(!document.getElementById('line-'+i)) drawPath(i, i+1, true); }
-            for(let i=1; i<=5; i++) { const p = document.getElementById('p' + i); p.classList.remove('locked'); p.classList.add('active'); }
-            document.getElementById('finish-modal').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
-        function closeGroupModal() { document.getElementById('finish-modal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
 
         function drawPath(fromIdx, toIdx, instant = false) {
             if(document.getElementById('line-'+fromIdx)) return;
